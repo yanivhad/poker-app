@@ -1,0 +1,15 @@
+import api from './axios'
+
+export const getUpcomingEvent = () => api.get('/events/upcoming').then(r => r.data)
+export const getAllEvents      = () => api.get('/events').then(r => r.data)
+export const getEventById     = (id: string) => api.get(`/events/${id}`).then(r => r.data)
+export const registerForEvent = (id: string) => api.post(`/events/${id}/register`).then(r => r.data)
+export const cancelRegistration = (id: string) => api.delete(`/events/${id}/register`).then(r => r.data)
+export const createEvent      = (data: any) => api.post('/events', data).then(r => r.data)
+export const updateEvent      = (id: string, data: any) => api.put(`/events/${id}`, data).then(r => r.data)
+export const assignHost = (id: string) => api.patch(`/events/${id}/host`).then(r => r.data)
+export const getChecklist    = (id: string) => api.get(`/events/${id}/checklist`).then(r => r.data)
+export const addChecklistItem = (id: string, label: string) => api.post(`/events/${id}/checklist`, { label }).then(r => r.data)
+export const toggleChecklistItem = (id: string, itemId: string, isChecked: boolean) => api.patch(`/events/${id}/checklist/${itemId}`, { isChecked }).then(r => r.data)
+export const deleteChecklistItem = (id: string, itemId: string) => api.delete(`/events/${id}/checklist/${itemId}`).then(r => r.data)
+export const getActiveEvents = () => api.get('/events/active').then(r => r.data)
