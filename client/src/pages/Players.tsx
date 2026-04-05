@@ -26,7 +26,7 @@ export default function PlayersPage() {
   const [players, setPlayers]   = useState<any[]>([])
   const [loading, setLoading]   = useState(true)
   const [expanded, setExpanded] = useState<string | null>(null)
-   const { toast, showToast, hideToast } = useToast()
+   const { toast, hideToast } = useToast()
 const navigate = useNavigate()
 const load = async () => {
     const { data } = await api.get('/users?includeInactive=true')

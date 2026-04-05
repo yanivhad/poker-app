@@ -14,9 +14,9 @@ import SettlementPage   from './pages/Settlement'
 import PlayersPage from './pages/Players'
 import EventHistoryPage from './pages/EventHistory'
 import AddPlayerPage from './pages/admin/AddPlayer'
+import React from 'react'
 
-function RequireAuth({ children }: { children: JSX.Element }) {
-  const user = useAuthStore(s => s.user)
+function RequireAuth({ children }: { children: React.ReactElement }) {  const user = useAuthStore(s => s.user)
   const loading = useAuthStore(s => s.loading)
   if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>
   if (!user) return <Navigate to="/login" replace />

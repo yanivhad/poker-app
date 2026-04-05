@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../api/axios'
-import { useAuthStore } from '../store/auth.store'
 import Spinner from '../components/ui/Spinner'
 import Toast from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
@@ -9,9 +8,8 @@ import { useToast } from '../hooks/useToast'
 export default function EventResultsPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const user = useAuthStore(s => s.user)
 
-  const [event, setEvent]       = useState<any>(null)
+  const [event, setEvent] = useState<any>(null) // eslint-disable-line
   const [players, setPlayers]   = useState<any[]>([])
   const [results, setResults]   = useState<Record<string, { buyIns: number; finalChips: number }>>({})
   const [loading, setLoading]   = useState(true)
