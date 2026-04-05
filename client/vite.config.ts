@@ -7,5 +7,13 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:3001'
     }
+  },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === 'TS_ERROR') return
+        warn(warning)
+      }
+    }
   }
 })
