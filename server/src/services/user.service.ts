@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs'
 import { prisma } from '../lib/prisma'
 import { GameType, DayOfWeek } from '@prisma/client'
 const userSelect = { id: true, fullName: true, nickname: true, phone: true, role: true, isActive: true, favoriteGames: true, preferredDays: true, createdAt: true }
@@ -5,4 +6,12 @@ export const getAllUsers  = (includeInactive = false) => prisma.user.findMany({ 
 export const getUserById  = (id: string) => prisma.user.findUniqueOrThrow({ where: { id }, select: userSelect })
 export const updateUser   = (id: string, data: { fullName?: string; nickname?: string; favoriteGames?: GameType[]; preferredDays?: DayOfWeek[] }) => prisma.user.update({ where: { id }, data })
 export const setUserActive= (id: string, isActive: boolean) => prisma.user.update({ where: { id }, data: { isActive } })
-export const createUser   = (data: { fullName: string; nickname: string; phone: string; role?: 'ADMIN' | 'PLAYER' }) => prisma.user.create({ data })
+export const createUser   = async (data: { fullName: string; nickname: string; phone: string; role?: 'ADMIN' | 'PLAYER'; password?: string }) => {
+  const { password, ...rest } = data
+  const passwordHash = password ? await bcrypt.hash(password, 10) : undefined
+  return prisma.user.create({ data: { ...rest, ...(passwordHash && { passwordHash }) } })
+}
+export const setPassword  = async (id: string, password: string) => {
+  const passwordHash = await bcrypt.hash(password, 10)
+  await prisma.user.update({ where: { id }, data: { passwordHash } })
+}

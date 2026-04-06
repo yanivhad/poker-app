@@ -3,36 +3,23 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/auth.store'
 
 export default function LoginPage() {
-  const [phone, setPhone]     = useState('')
-  const [otp, setOtp]         = useState('')
-  const [step, setStep]       = useState<'phone' | 'otp'>('phone')
-  const [error, setError]     = useState('')
-  const [loading, setLoading] = useState(false)
+  const [phone, setPhone]       = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
+  const [showPw, setShowPw]     = useState(false)
 
-  const { requestOtp, verifyOtp } = useAuthStore()
-  const navigate = useNavigate()
+  const { login } = useAuthStore()
+  const navigate  = useNavigate()
 
-  const handleRequestOtp = async () => {
+  const handleLogin = async () => {
     setError('')
     setLoading(true)
     try {
-      await requestOtp(phone)
-      setStep('otp')
-    } catch (e: any) {
-      setError(e.response?.data?.message || 'Failed to send OTP')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleVerifyOtp = async () => {
-    setError('')
-    setLoading(true)
-    try {
-      await verifyOtp(phone, otp)
+      await login(phone, password)
       navigate('/')
     } catch (e: any) {
-      setError(e.response?.data?.message || 'Invalid OTP')
+      setError(e.response?.data?.message || 'Login failed')
     } finally {
       setLoading(false)
     }
@@ -44,62 +31,55 @@ export default function LoginPage() {
         <div className="text-center">
           <div className="text-5xl mb-2">🃏</div>
           <h1 className="text-2xl font-bold text-brand">Poker App</h1>
-          <p className="text-gray-400 text-sm mt-1">Sign in with your phone number</p>
+          <p className="text-gray-400 text-sm mt-1">Sign in to continue</p>
         </div>
 
-        {step === 'phone' ? (
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-gray-400 mb-1 block">Phone number</label>
-              <input
-                className="input"
-                type="tel"
-                placeholder="+972500000000"
-                value={phone}
-                onChange={e => setPhone(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleRequestOtp()}
-              />
-            </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-            <button
-              className="btn-primary w-full"
-              onClick={handleRequestOtp}
-              disabled={loading || !phone}
-            >
-              {loading ? 'Sending...' : 'Send OTP'}
-            </button>
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm text-gray-400 mb-1 block">Phone number</label>
+            <input
+              className="input"
+              type="tel"
+              placeholder="+972500000000"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleLogin()}
+              autoFocus
+            />
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-gray-400 mb-1 block">Enter OTP sent to {phone}</label>
+
+          <div>
+            <label className="text-sm text-gray-400 mb-1 block">Password</label>
+            <div className="relative">
               <input
-                className="input text-center text-2xl tracking-widest"
-                type="text"
-                maxLength={6}
-                placeholder="······"
-                value={otp}
-                onChange={e => setOtp(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleVerifyOtp()}
-                autoFocus
+                className="input pr-10"
+                type={showPw ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleLogin()}
               />
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={() => setShowPw(v => !v)}
+                style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: '0.875rem' }}
+              >
+                {showPw ? 'Hide' : 'Show'}
+              </button>
             </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-            <button
-              className="btn-primary w-full"
-              onClick={handleVerifyOtp}
-              disabled={loading || otp.length !== 6}
-            >
-              {loading ? 'Verifying...' : 'Verify OTP'}
-            </button>
-            <button
-              className="text-gray-400 text-sm w-full text-center hover:text-white"
-              onClick={() => { setStep('phone'); setOtp(''); setError('') }}
-            >
-              ← Change number
-            </button>
           </div>
-        )}
+
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+
+          <button
+            className="btn-primary w-full"
+            onClick={handleLogin}
+            disabled={loading || !phone || !password}
+          >
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+        </div>
       </div>
     </div>
   )

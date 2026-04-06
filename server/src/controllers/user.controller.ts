@@ -12,4 +12,12 @@ export const update  = async (req: AuthRequest, res: Response) => {
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 }
 export const setActive = async (req: AuthRequest, res: Response) => { try { res.json(await UserService.setUserActive(req.params.id, req.body.isActive)) } catch (e: any) { res.status(400).json({ message: e.message }) } }
-export const create  = async (req: AuthRequest, res: Response) => { try { res.status(201).json(await UserService.createUser(req.body)) } catch (e: any) { res.status(400).json({ message: e.message }) } }
+export const create      = async (req: AuthRequest, res: Response) => { try { res.status(201).json(await UserService.createUser(req.body)) } catch (e: any) { res.status(400).json({ message: e.message }) } }
+export const setPassword = async (req: AuthRequest, res: Response) => {
+  try {
+    const { password } = req.body
+    if (!password || password.length < 6) return res.status(400).json({ message: 'Password must be at least 6 characters' })
+    await UserService.setPassword(req.params.id, password)
+    res.json({ message: 'Password updated' })
+  } catch (e: any) { res.status(400).json({ message: e.message }) }
+}

@@ -11,28 +11,24 @@ interface User {
 interface AuthState {
   user: User | null
   loading: boolean
-  requestOtp: (phone: string) => Promise<void>
-  verifyOtp:  (phone: string, otp: string) => Promise<void>
-  logout:     () => void
-  loadUser:   () => Promise<void>
+  login:    (phone: string, password: string) => Promise<void>
+  logout:   () => void
+  loadUser: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   loading: true,
 
-  requestOtp: async (phone) => {
-    await api.post('/auth/request-otp', { phone })
-  },
-
-  verifyOtp: async (phone, otp) => {
-    const { data } = await api.post('/auth/verify-otp', { phone, otp })
+  login: async (phone, password) => {
+    const { data } = await api.post('/auth/login', { phone, password })
     localStorage.setItem('accessToken',  data.accessToken)
     localStorage.setItem('refreshToken', data.refreshToken)
     set({ user: data.user })
   },
 
   logout: () => {
+    api.post('/auth/logout').catch(() => {}) // best-effort server-side logout
     localStorage.clear()
     set({ user: null })
   },
