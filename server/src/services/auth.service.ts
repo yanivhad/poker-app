@@ -2,8 +2,8 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '../lib/prisma'
 import { signAccess, signRefresh, verifyRefresh } from '../lib/jwt'
 
-export const login = async (phone: string, password: string) => {
-  const user = await prisma.user.findUnique({ where: { phone } })
+export const login = async (nickname: string, password: string) => {
+  const user = await prisma.user.findUnique({ where: { nickname } })
   if (!user) throw new Error('Invalid credentials')
   if (!user.passwordHash) throw new Error('Password not set for this account — contact an admin')
   if (!user.isActive) throw new Error('Account is inactive')

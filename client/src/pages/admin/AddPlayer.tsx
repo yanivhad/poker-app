@@ -9,6 +9,7 @@ export default function AddPlayerPage() {
     fullName: '',
     nickname: '',
     phone:    '',
+    password: '',
     role:     'PLAYER',
   })
 
@@ -63,6 +64,17 @@ export default function AddPlayerPage() {
             onChange={e => set('phone', e.target.value)}
             placeholder="+972501234567"
             type="tel"
+            style={{ width: '100%', background: '#1a1a2e', color: 'white', border: '1px solid #4b5563', borderRadius: '0.5rem', padding: '0.5rem 0.75rem' }}
+          />
+        </div>
+
+        <div>
+          <label style={{ color: '#9ca3af', fontSize: '0.75rem', display: 'block', marginBottom: 4 }}>Password <span style={{ color: '#6b7280' }}>(optional — can be set later)</span></label>
+          <input
+            value={form.password}
+            onChange={e => set('password', e.target.value)}
+            placeholder="Min 6 characters"
+            type="password"
             style={{ width: '100%', background: '#1a1a2e', color: 'white', border: '1px solid #4b5563', borderRadius: '0.5rem', padding: '0.5rem 0.75rem' }}
           />
         </div>

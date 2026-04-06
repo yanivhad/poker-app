@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import path from 'path'
 import { ENV } from './config/env'
 import authRoutes         from './routes/auth.routes'
 import userRoutes         from './routes/user.routes'
@@ -13,6 +14,8 @@ import statsRoutes        from './routes/stats.routes'
 const app = express()
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }))
 app.use(express.json())
+
+// API routes
 app.get('/api/health', (_, res) => res.json({ status: 'ok' }))
 app.use('/api/auth',        authRoutes)
 app.use('/api/users',       userRoutes)
@@ -23,4 +26,10 @@ app.use('/api/events',      checklistRoutes)
 app.use('/api/settlements', settlementRoutes)
 app.use('/api/cases',       caseRoutes)
 app.use('/api/stats',       statsRoutes)
+
+// Serve React build — must come after all API routes
+const clientDist = path.resolve(__dirname, '../../client/dist')
+app.use(express.static(clientDist))
+app.get('*', (_, res) => res.sendFile(path.join(clientDist, 'index.html')))
+
 export default app

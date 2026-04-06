@@ -23,11 +23,14 @@ const DAYS: Record<string, string> = {
 }
 
 export default function PlayersPage() {
-  const [players, setPlayers]   = useState<any[]>([])
-  const [loading, setLoading]   = useState(true)
-  const [expanded, setExpanded] = useState<string | null>(null)
-   const { toast, hideToast } = useToast()
-const navigate = useNavigate()
+  const [players, setPlayers]           = useState<any[]>([])
+  const [loading, setLoading]           = useState(true)
+  const [expanded, setExpanded]         = useState<string | null>(null)
+  const [pwTarget, setPwTarget]         = useState<string | null>(null)
+  const [newPassword, setNewPassword]   = useState('')
+  const [pwSaving, setPwSaving]         = useState(false)
+  const { toast, hideToast } = useToast()
+  const navigate = useNavigate()
 const load = async () => {
     const { data } = await api.get('/users?includeInactive=true')
     setPlayers(data)
@@ -39,6 +42,21 @@ const load = async () => {
   const toggleActive = async (id: string, isActive: boolean) => {
     await api.patch(`/users/${id}/status`, { isActive: !isActive })
     await load()
+  }
+
+  const handleSetPassword = async (id: string) => {
+    if (!newPassword || newPassword.length < 6) return alert('Password must be at least 6 characters')
+    setPwSaving(true)
+    try {
+      await api.patch(`/users/${id}/password`, { password: newPassword })
+      setPwTarget(null)
+      setNewPassword('')
+      alert('Password updated')
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Error setting password')
+    } finally {
+      setPwSaving(false)
+    }
   }
 
 if (loading) return <Spinner />
@@ -112,6 +130,33 @@ if (loading) return <Spinner />
                       ))}
                     </div>
                   </div>
+                )}
+
+                {/* Set Password (admin only) */}
+                {pwTarget === p.id ? (
+                  <div style={{ marginBottom: 8, display: 'flex', gap: 6 }}>
+                    <input
+                      type="password"
+                      placeholder="New password (min 6 chars)"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      style={{ flex: 1, background: '#1a1a2e', color: 'white', border: '1px solid #4b5563', borderRadius: '0.5rem', padding: '0.375rem 0.5rem', fontSize: '0.875rem' }}
+                    />
+                    <button
+                      onClick={() => handleSetPassword(p.id)}
+                      disabled={pwSaving}
+                      style={{ padding: '0.375rem 0.75rem', borderRadius: '0.5rem', background: '#16a34a', color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600 }}
+                    >{pwSaving ? '...' : 'Save'}</button>
+                    <button
+                      onClick={() => { setPwTarget(null); setNewPassword('') }}
+                      style={{ padding: '0.375rem 0.5rem', borderRadius: '0.5rem', background: 'transparent', color: '#9ca3af', border: '1px solid #4b5563', cursor: 'pointer', fontSize: '0.875rem' }}
+                    >✕</button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { setPwTarget(p.id); setNewPassword('') }}
+                    style={{ width: '100%', padding: '0.375rem', borderRadius: '0.5rem', background: '#1e3a5f33', color: '#60a5fa', border: '1px solid #1e3a5f', cursor: 'pointer', fontSize: '0.875rem', marginBottom: 6 }}
+                  >🔑 Set Password</button>
                 )}
 
                 <button

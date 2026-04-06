@@ -3,7 +3,7 @@ import * as AuthService from '../services/auth.service'
 import { AuthRequest } from '../middleware/auth'
 
 export const login = async (req: Request, res: Response) => {
-  try { res.json(await AuthService.login(req.body.phone, req.body.password)) }
+  try { res.json(await AuthService.login(req.body.nickname, req.body.password)) }
   catch (e: any) { res.status(401).json({ message: e.message }) }
 }
 

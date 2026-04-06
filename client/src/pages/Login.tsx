@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/auth.store'
 
 export default function LoginPage() {
-  const [phone, setPhone]       = useState('')
+  const [nickname, setNickname] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
@@ -16,7 +16,7 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      await login(phone, password)
+      await login(nickname, password)
       navigate('/')
     } catch (e: any) {
       setError(e.response?.data?.message || 'Login failed')
@@ -36,13 +36,13 @@ export default function LoginPage() {
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-gray-400 mb-1 block">Phone number</label>
+            <label className="text-sm text-gray-400 mb-1 block">Nickname</label>
             <input
               className="input"
-              type="tel"
-              placeholder="+972500000000"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
+              type="text"
+              placeholder="YourNickname"
+              value={nickname}
+              onChange={e => setNickname(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
               autoFocus
             />
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <button
             className="btn-primary w-full"
             onClick={handleLogin}
-            disabled={loading || !phone || !password}
+            disabled={loading || !nickname || !password}
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
