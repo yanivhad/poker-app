@@ -11,6 +11,7 @@ export default function AppShell() {
     { to: '/cases',   label: '🎲 Kits'    },
     { to: '/stats',   label: '📊 Stats'   },
     { to: '/profile', label: '👤 Profile' },
+    { to: '/about',   label: 'ℹ️ About'   },
     ...(user?.role === 'ADMIN' ? [{ to: '/players', label: '👥 Players' }] : []),
   ]
 
