@@ -2,19 +2,20 @@ import { PrismaClient, Role, CaseType } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
-const DEFAULT_PASSWORD = 'poker123' // change after first login
+
+async function hash(password: string) {
+  return bcrypt.hash(password, 10)
+}
 
 async function main() {
-  const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 10)
-
   const admin = await prisma.user.upsert({
     where:  { phone: '+972504078908' },
-    update: { passwordHash },
+    update: { passwordHash: await hash('poker123') },
     create: {
       fullName:      'Yaniv Hadad',
       nickname:      'Ref',
       phone:         '+972504078908',
-      passwordHash,
+      passwordHash:  await hash('poker123'),
       role:          Role.ADMIN,
       isActive:      true,
       favoriteGames: ['TEXAS_HOLDEM'],
@@ -23,23 +24,23 @@ async function main() {
   })
 
   const players = await Promise.all([
-    { fullName: 'Oren Reiss',       nickname: 'The Raise',   phone: '+972525394384' },
-    { fullName: 'Aviv Feffer',      nickname: 'CEO',         phone: '+972523229855' },
-    { fullName: 'Shaul Tsur',       nickname: 'The Cat',     phone: '+972549980323' },
-    { fullName: 'Assaf ',           nickname: 'Is loading',  phone: '+972507759929' },
-    { fullName: 'Aviv Brin',        nickname: 'Brino',       phone: '+972545596662' },
-    { fullName: 'Efi Barazani',     nickname: 'Barazani',    phone: '+972525869996' },
-    { fullName: 'Hezi  Shawrtz',    nickname: 'Mojtaba',     phone: '+972549997510' },
-    { fullName: 'Oded Shapira',     nickname: 'Odedi',       phone: '+972525867056' },
-    { fullName: 'Ronen Zilberman',  nickname: 'Roneni',      phone: '+972546090379' },
-    { fullName: 'Tomer',            nickname: 'OMAHA LAKRAN',phone: '+972545204299' },
-    { fullName: 'Uri Kaftori',      nickname: 'The pilot',   phone: '+972546654798' },
-  ].map(p => prisma.user.upsert({
+    { fullName: 'Oren Reiss',       nickname: 'The Raise',    phone: '+972525394384', password: 'poker123' },
+    { fullName: 'Aviv Feffer',      nickname: 'CEO',          phone: '+972523229855', password: 'poker123' },
+    { fullName: 'Shaul Tsur',       nickname: 'The Cat',      phone: '+972549980323', password: 'poker123' },
+    { fullName: 'Assaf ',           nickname: 'Is loading',   phone: '+972507759929', password: 'poker123' },
+    { fullName: 'Aviv Brin',        nickname: 'Brino',        phone: '+972545596662', password: 'poker123' },
+    { fullName: 'Efi Barazani',     nickname: 'Barazani',     phone: '+972525869996', password: 'poker123' },
+    { fullName: 'Hezi  Shawrtz',    nickname: 'Mojtaba',      phone: '+972549997510', password: 'poker123' },
+    { fullName: 'Oded Shapira',     nickname: 'Odedi',        phone: '+972525867056', password: 'poker123' },
+    { fullName: 'Ronen Zilberman',  nickname: 'Roneni',       phone: '+972546090379', password: 'poker123' },
+    { fullName: 'Tomer',            nickname: 'OMAHA LAKRAN', phone: '+972545204299', password: 'poker123' },
+    { fullName: 'Uri Kaftori',      nickname: 'The pilot',    phone: '+972546654798', password: 'poker123' },
+  ].map(async ({ password, ...p }) => prisma.user.upsert({
     where:  { phone: p.phone },
-    update: { passwordHash },
+    update: { passwordHash: await hash(password) },
     create: {
       ...p,
-      passwordHash,
+      passwordHash:  await hash(password),
       role:          Role.PLAYER,
       isActive:      true,
       favoriteGames: ['TEXAS_HOLDEM', 'OMAHA'],
@@ -60,7 +61,6 @@ async function main() {
   console.log('✅ Seed complete')
   console.log(`   Admin: ${admin.nickname} (${admin.phone})`)
   console.log(`   Players: ${players.map(p => p.nickname).join(', ')}`)
-  console.log(`   Default password: "${DEFAULT_PASSWORD}" — remind users to change it`)
 }
 
 main()
