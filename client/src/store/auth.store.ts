@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import axios from 'axios'
-import api from '../api/axios'
+import api, { BASE_URL } from '../api/axios'
 
 interface User {
   id: string
@@ -49,7 +49,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch {
       // Try refreshing
       try {
-        const { data: refreshData } = await axios.post('/api/auth/refresh', { refreshToken })
+        const { data: refreshData } = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken })
         localStorage.setItem('accessToken',  refreshData.accessToken)
         localStorage.setItem('refreshToken', refreshData.refreshToken)
         const { data } = await api.get('/users/me')
