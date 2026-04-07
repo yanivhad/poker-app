@@ -15,3 +15,11 @@ export const setPassword  = async (id: string, password: string) => {
   const passwordHash = await bcrypt.hash(password, 10)
   await prisma.user.update({ where: { id }, data: { passwordHash } })
 }
+export const changeOwnPassword = async (id: string, currentPassword: string, newPassword: string) => {
+  const user = await prisma.user.findUniqueOrThrow({ where: { id } })
+  if (!user.passwordHash) throw new Error('No password set on this account')
+  const valid = await bcrypt.compare(currentPassword, user.passwordHash)
+  if (!valid) throw new Error('Current password is incorrect')
+  const passwordHash = await bcrypt.hash(newPassword, 10)
+  await prisma.user.update({ where: { id }, data: { passwordHash } })
+}

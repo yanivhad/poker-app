@@ -9,5 +9,6 @@ r.get(  '/:id',        authenticate, UserController.getOne)
 r.post( '/',           authenticate, requireAdmin, UserController.create)
 r.put(  '/:id',        authenticate, UserController.update)
 r.patch('/:id/status',   authenticate, requireAdmin, UserController.setActive)
+r.patch('/me/password',  authenticate, UserController.changeMyPassword)
 r.patch('/:id/password', authenticate, requireAdmin, UserController.setPassword)
 export default r

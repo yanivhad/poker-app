@@ -21,3 +21,11 @@ export const setPassword = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Password updated' })
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 }
+export const changeMyPassword = async (req: AuthRequest, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body
+    if (!newPassword || newPassword.length < 6) return res.status(400).json({ message: 'New password must be at least 6 characters' })
+    await UserService.changeOwnPassword(req.user!.userId, currentPassword, newPassword)
+    res.json({ message: 'Password updated' })
+  } catch (e: any) { res.status(400).json({ message: e.message }) }
+}

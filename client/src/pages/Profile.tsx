@@ -30,6 +30,28 @@ export default function ProfilePage() {
   const [editing, setEditing]   = useState(false)
   const [form, setForm]         = useState<any>(null)
 
+  const [pwForm, setPwForm]     = useState({ current: '', next: '', confirm: '' })
+  const [pwSaving, setPwSaving] = useState(false)
+  const [pwError, setPwError]   = useState('')
+  const [pwSuccess, setPwSuccess] = useState(false)
+
+  const handleChangePassword = async () => {
+    setPwError('')
+    setPwSuccess(false)
+    if (pwForm.next.length < 6) { setPwError('New password must be at least 6 characters'); return }
+    if (pwForm.next !== pwForm.confirm) { setPwError('Passwords do not match'); return }
+    setPwSaving(true)
+    try {
+      await api.patch('/users/me/password', { currentPassword: pwForm.current, newPassword: pwForm.next })
+      setPwForm({ current: '', next: '', confirm: '' })
+      setPwSuccess(true)
+    } catch (e: any) {
+      setPwError(e.response?.data?.message || 'Failed to update password')
+    } finally {
+      setPwSaving(false)
+    }
+  }
+
   useEffect(() => {
     api.get('/users/me').then(r => {
       setProfile(r.data)
@@ -179,6 +201,28 @@ export default function ProfilePage() {
             >Cancel</button>
           </div>
         )}
+      </div>
+
+      {/* Change Password */}
+      <div className="card" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <h2 style={{ color: '#9ca3af', fontSize: '0.875rem', fontWeight: 600, margin: 0 }}>Change Password</h2>
+        {(['current', 'next', 'confirm'] as const).map((field, i) => (
+          <input
+            key={field}
+            type="password"
+            placeholder={i === 0 ? 'Current password' : i === 1 ? 'New password' : 'Confirm new password'}
+            value={pwForm[field]}
+            onChange={e => setPwForm(f => ({ ...f, [field]: e.target.value }))}
+            style={{ width: '100%', background: '#1a1a2e', color: 'white', border: '1px solid #4b5563', borderRadius: '0.5rem', padding: '0.375rem 0.75rem', boxSizing: 'border-box' }}
+          />
+        ))}
+        {pwError   && <p style={{ color: '#f87171', fontSize: '0.875rem', margin: 0 }}>{pwError}</p>}
+        {pwSuccess && <p style={{ color: '#4ade80', fontSize: '0.875rem', margin: 0 }}>Password updated successfully</p>}
+        <button
+          onClick={handleChangePassword}
+          disabled={pwSaving || !pwForm.current || !pwForm.next || !pwForm.confirm}
+          style={{ padding: '0.5rem', borderRadius: '0.5rem', background: '#16a34a', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+        >{pwSaving ? 'Updating...' : 'Update Password'}</button>
       </div>
     </div>
   )
