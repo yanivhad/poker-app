@@ -54,6 +54,14 @@ export const cancel = async (eventId: string, userId: string) => {
     data:  { status: 'CANCELLED' }
   })
 
+  // If the cancelling user was the host, clear the host slot
+  if (event.hostId === userId) {
+    await prisma.event.update({
+      where: { id: eventId },
+      data:  { hostId: null }
+    })
+  }
+
   // FIFO waitlist promotion
   if (wasConfirmed) {
     const confirmedCount = await prisma.registration.count({
