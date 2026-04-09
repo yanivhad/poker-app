@@ -14,6 +14,7 @@ import SettlementPage   from './pages/Settlement'
 import PlayersPage from './pages/Players'
 import EventHistoryPage from './pages/EventHistory'
 import AddPlayerPage from './pages/admin/AddPlayer'
+import EditEventPage from './pages/admin/EditEvent'
 import AboutPage from './pages/About'
 import React from 'react'
 
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="players" element={<PlayersPage />} />
           <Route path="history" element={<EventHistoryPage />} />
           <Route path="admin/players/new" element={<AddPlayerPage />} />
+          <Route path="admin/events/:id/edit" element={<EditEventPage />} />
 <Route path="events/:id/settlement" element={<SettlementPage />} />
           <Route path="about" element={<AboutPage />} />
         </Route>

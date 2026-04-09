@@ -96,14 +96,12 @@ export default function HomePage() {
     <div style={{ textAlign: 'center', marginTop: 60 }}>
       <div style={{ fontSize: '3rem', marginBottom: 8 }}>🃏</div>
       <p style={{ color: '#9ca3af', marginBottom: 16 }}>No upcoming events.</p>
-      {user?.role === 'ADMIN' && (
-        <button
-          onClick={() => navigate('/admin/events/new')}
-          style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1.25rem', cursor: 'pointer', fontWeight: 600 }}
-        >
-          + Create Event
-        </button>
-      )}
+      <button
+        onClick={() => navigate('/admin/events/new')}
+        style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1.25rem', cursor: 'pointer', fontWeight: 600 }}
+      >
+        + Create Event
+      </button>
     </div>
   )
 
@@ -111,14 +109,12 @@ export default function HomePage() {
     <div style={{ maxWidth: 520, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '1.25rem' }}>Upcoming Events</h1>
-        {user?.role === 'ADMIN' && (
-          <button
-            onClick={() => navigate('/admin/events/new')}
-            style={{ background: '#374151', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.375rem 0.75rem', cursor: 'pointer', fontSize: '0.875rem' }}
-          >
-            + New Event
-          </button>
-        )}
+        <button
+          onClick={() => navigate('/admin/events/new')}
+          style={{ background: '#374151', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.375rem 0.75rem', cursor: 'pointer', fontSize: '0.875rem' }}
+        >
+          + New Event
+        </button>
       </div>
 
       {events.map(event => {
@@ -185,14 +181,19 @@ export default function HomePage() {
               </a>
             </div>
 
-            {/* Admin controls */}
-            {user?.role === 'ADMIN' && (
+            {/* Controls */}
+            {['DRAFT', 'OPEN', 'CLOSED'].includes(event.status) && (
               <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <p style={{ color: '#9ca3af', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600 }}>
-                  Admin Controls
-                </p>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {event.status === 'DRAFT' && (
+                  {['DRAFT', 'OPEN'].includes(event.status) && (
+                    <button
+                      onClick={() => navigate(`/admin/events/${event.id}/edit`)}
+                      style={{ flex: 1, padding: '0.375rem', borderRadius: '0.5rem', background: '#374151', color: 'white', border: '1px solid #4b5563', cursor: 'pointer', fontSize: '0.875rem' }}
+                    >
+                      ✏️ Edit Event
+                    </button>
+                  )}
+                  {user?.role === 'ADMIN' && event.status === 'DRAFT' && (
                     <button
                       onClick={() => handleStatusChange(event.id, 'OPEN')}
                       style={{ flex: 1, padding: '0.375rem', borderRadius: '0.5rem', background: '#16a34a', color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}
@@ -200,7 +201,7 @@ export default function HomePage() {
                       ✅ Open Registration
                     </button>
                   )}
-                  {['OPEN', 'CLOSED'].includes(event.status) && (
+                  {user?.role === 'ADMIN' && ['OPEN', 'CLOSED'].includes(event.status) && (
                     <>
                       <button
                         onClick={() => navigate(`/events/${event.id}/results`)}
