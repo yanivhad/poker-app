@@ -40,16 +40,23 @@ export const requestJoin = async (gangId: string, userId: string) => {
   const existing = await prisma.gangMember.findUnique({
     where: { gangId_userId: { gangId, userId } }
   })
+
+  // ADMIN/MASTER users are auto-approved as gang ADMIN
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { role: true } })
+  const isGlobalAdmin = user.role === 'ADMIN' || user.role === 'MASTER'
+  const autoApprove   = isGlobalAdmin
+
   if (existing) {
     if (existing.status === 'APPROVED') throw new Error('Already a member')
-    if (existing.status === 'PENDING')  throw new Error('Request already pending')
-    // REJECTED → re-request
+    if (existing.status === 'PENDING' && !autoApprove) throw new Error('Request already pending')
     return prisma.gangMember.update({
       where: { gangId_userId: { gangId, userId } },
-      data:  { status: 'PENDING' },
+      data:  { status: autoApprove ? 'APPROVED' : 'PENDING', role: autoApprove ? 'ADMIN' : existing.role },
     })
   }
-  return prisma.gangMember.create({ data: { gangId, userId } })
+  return prisma.gangMember.create({
+    data: { gangId, userId, status: autoApprove ? 'APPROVED' : 'PENDING', role: autoApprove ? 'ADMIN' : 'MEMBER' }
+  })
 }
 
 export const updateMember = (gangId: string, userId: string, data: { role?: 'ADMIN' | 'MEMBER'; status?: 'APPROVED' | 'REJECTED' }) =>
