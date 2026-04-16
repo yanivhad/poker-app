@@ -6,14 +6,26 @@ import { Response } from 'express'
 
 const r = Router()
 
-r.get('/leaderboard', authenticate, async (_req: AuthRequest, res: Response) => {
+r.get('/leaderboard', authenticate, async (req: AuthRequest, res: Response) => {
   try {
+    // Stats aggregate across ALL gangs the user is an approved member of
+    const isMaster = req.user?.role === 'MASTER' || req.user?.role === 'ADMIN'
+    let gangFilter: object = {}
+
+    if (!isMaster) {
+      const memberships = await prisma.gangMember.findMany({
+        where: { userId: req.user!.userId, status: 'APPROVED' },
+        select: { gangId: true },
+      })
+      const gangIds = memberships.map(m => m.gangId)
+      gangFilter = gangIds.length > 0 ? { event: { gangId: { in: gangIds } } } : { event: { gangId: null } }
+    }
+
     const results = await prisma.result.findMany({
-      where:   { userId: { not: null } },
+      where:   { userId: { not: null }, ...gangFilter },
       include: { user: { select: { id: true, nickname: true } } },
     })
 
-    // Group by user
     const map = new Map<string, { userId: string; nickname: string; netNIS: number; gamesPlayed: number; wins: number }>()
 
     for (const r of results) {

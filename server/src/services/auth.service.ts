@@ -9,10 +9,19 @@ export const login = async (nickname: string, password: string) => {
   if (!user.isActive) throw new Error('Account is inactive')
   const valid = await bcrypt.compare(password, user.passwordHash)
   if (!valid) throw new Error('Invalid credentials')
+
+  const memberships = await prisma.gangMember.findMany({
+    where:   { userId: user.id, status: 'APPROVED' },
+    include: { gang: { select: { id: true, name: true } } },
+    orderBy: { createdAt: 'asc' },
+  })
+  const gangs = memberships.map(m => ({ id: m.gang.id, name: m.gang.name, role: m.role }))
+
   return {
     accessToken:  signAccess(user.id, user.role),
     refreshToken: signRefresh(user.id),
-    user: { id: user.id, nickname: user.nickname, role: user.role },
+    user:  { id: user.id, nickname: user.nickname, role: user.role },
+    gangs,
   }
 }
 

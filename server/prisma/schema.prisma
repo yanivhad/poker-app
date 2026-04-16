@@ -8,8 +8,20 @@ datasource db {
 }
 
 enum Role {
+  MASTER
   ADMIN
   PLAYER
+}
+
+enum GangMemberRole {
+  ADMIN
+  MEMBER
+}
+
+enum GangMemberStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum GameType {
@@ -94,6 +106,33 @@ model User {
   settlementsReceived Settlement[]    @relation("SettlementTo")
   heldCases           PokerCase[]
   checklistItems      ChecklistItem[]
+  gangMemberships     GangMember[]
+}
+
+model Gang {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members GangMember[]
+  events  Event[]
+  cases   PokerCase[]
+}
+
+model GangMember {
+  id        String           @id @default(cuid())
+  gangId    String
+  userId    String
+  role      GangMemberRole   @default(MEMBER)
+  status    GangMemberStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  gang Gang @relation(fields: [gangId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gangId, userId])
 }
 
 model Event {
@@ -108,10 +147,12 @@ model Event {
   onlineLink          String?
   onlinePassword      String?
   hostId              String?
+  gangId              String?
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
 
   host          User?           @relation("HostedEvents", fields: [hostId], references: [id])
+  gang          Gang?           @relation(fields: [gangId], references: [id])
   registrations Registration[]
   eventPlayers  EventPlayer[]
   buyIns        BuyIn[]
@@ -219,9 +260,11 @@ model PokerCase {
   label        String
   type         CaseType
   heldByUserId String
+  gangId       String?
   updatedAt    DateTime @updatedAt
 
-  heldBy User @relation(fields: [heldByUserId], references: [id])
+  heldBy User  @relation(fields: [heldByUserId], references: [id])
+  gang   Gang? @relation(fields: [gangId], references: [id])
 }
 
 model ChecklistItem {

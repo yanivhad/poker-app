@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createEvent } from '../../api/events.api'
+import { useAuthStore } from '../../store/auth.store'
 
 function getDefaults() {
   const now = new Date()
@@ -34,7 +35,8 @@ const inputStyle = {
 }
 
 export default function CreateEventPage() {
-  const navigate  = useNavigate()
+  const navigate    = useNavigate()
+  const activeGang  = useAuthStore(s => s.activeGang)
   const [loading, setLoading] = useState(false)
   const defaults  = getDefaults()
   const [form, setForm] = useState({
@@ -79,6 +81,7 @@ export default function CreateEventPage() {
         date:                new Date(form.date).toISOString(),
         registrationOpensAt: new Date(form.registrationOpensAt).toISOString(),
         maxSeats:            form.type === 'SPECIAL' ? 999 : Number(form.maxSeats),
+        gangId:              activeGang?.id ?? null,
       }
       if (form.lastRoundTime) payload.lastRoundTime = new Date(form.lastRoundTime).toISOString()
       if (form.format === 'ONLINE') {

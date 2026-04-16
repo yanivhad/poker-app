@@ -1,18 +1,18 @@
 import { prisma } from '../lib/prisma'
 import { EventFormat, EventStatus, EventType } from '@prisma/client'
 const eventInclude = { host: { select: { id: true, nickname: true } }, registrations: { where: { status: { in: ['CONFIRMED' as const, 'WAITLIST' as const] } }, include: { user: { select: { id: true, nickname: true } } }, orderBy: { position: 'asc' as const } } }
-export const getAllEvents    = () => prisma.event.findMany({ orderBy: { date: 'desc' }, include: eventInclude })
+export const getAllEvents    = (gangId?: string) => prisma.event.findMany({ where: gangId ? { gangId } : {}, orderBy: { date: 'desc' }, include: eventInclude })
 export const getEventById   = (id: string) => prisma.event.findUnique({ where: { id }, include: { ...eventInclude, checklist: true, guests: true, eventPlayers: { include: { user: { select: { id: true, nickname: true } }, guest: true } } } })
-export const getUpcomingEvent = () => prisma.event.findFirst({ where: { status: { in: ['DRAFT', 'OPEN'] }, date: { gte: new Date() } }, orderBy: { date: 'asc' }, include: eventInclude })
+export const getUpcomingEvent = (gangId?: string) => prisma.event.findFirst({ where: { ...(gangId ? { gangId } : {}), status: { in: ['DRAFT', 'OPEN'] }, date: { gte: new Date() } }, orderBy: { date: 'asc' }, include: eventInclude })
 const DEFAULT_CHECKLIST = [
   'Beers 🍺',
   'Snacks 🥨',
   'Heater 🔥',
 ]
 
-export const getActiveEvents = () =>
+export const getActiveEvents = (gangId?: string) =>
   prisma.event.findMany({
-    where:   { status: { in: ['DRAFT', 'OPEN', 'CLOSED'] }, date: { gte: new Date() } },
+    where:   { ...(gangId ? { gangId } : {}), status: { in: ['DRAFT', 'OPEN', 'CLOSED'] }, date: { gte: new Date() } },
     orderBy: { date: 'asc' },
     include: eventInclude,
   })
@@ -41,7 +41,7 @@ export const getActiveEvents = () =>
       throw new Error('Another event is already scheduled within 3 hours of this time')
   
     const status = new Date(data.registrationOpensAt) <= new Date() ? 'OPEN' : 'DRAFT'
-    const event  = await prisma.event.create({ data: { ...data, status } })
+    const event  = await prisma.event.create({ data: { ...data, status, gangId: data.gangId ?? null } })
   
     if (data.format === 'IN_PERSON') {
       await prisma.checklistItem.createMany({

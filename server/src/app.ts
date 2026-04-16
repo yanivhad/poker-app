@@ -11,6 +11,7 @@ import settlementRoutes   from './routes/settlement.routes'
 import caseRoutes         from './routes/case.routes'
 import checklistRoutes    from './routes/checklist.routes'
 import statsRoutes        from './routes/stats.routes'
+import gangRoutes         from './routes/gang.routes'
 const app = express()
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }))
 app.use(express.json())
@@ -26,6 +27,7 @@ app.use('/api/events',      checklistRoutes)
 app.use('/api/settlements', settlementRoutes)
 app.use('/api/cases',       caseRoutes)
 app.use('/api/stats',       statsRoutes)
+app.use('/api/gangs',       gangRoutes)
 
 // Serve React build — must come after all API routes
 const clientDist = path.resolve(__dirname, '../../client/dist')

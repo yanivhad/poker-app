@@ -1,15 +1,17 @@
 import { Router } from 'express'
 import { authenticate } from '../middleware/auth'
 import { requireAdmin } from '../middleware/role'
+import { requireGangMember, requireGangAdmin } from '../middleware/gang'
 import { prisma } from '../lib/prisma'
 import { AuthRequest } from '../middleware/auth'
 import { Response } from 'express'
 
 const r = Router()
 
-r.get('/', authenticate, async (_req: AuthRequest, res: Response) => {
+r.get('/', authenticate, requireGangMember, async (req: AuthRequest, res: Response) => {
   try {
     const cases = await prisma.pokerCase.findMany({
+      where:   req.gangId ? { gangId: req.gangId } : {},
       include: { heldBy: { select: { id: true, nickname: true } } },
       orderBy: { type: 'asc' }
     })
@@ -17,7 +19,7 @@ r.get('/', authenticate, async (_req: AuthRequest, res: Response) => {
   } catch (e: any) { res.status(500).json({ message: e.message }) }
 })
 
-r.patch('/:id/holder', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
+r.patch('/:id/holder', authenticate, requireGangMember, requireGangAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const c = await prisma.pokerCase.update({
       where: { id: req.params.id },
@@ -28,7 +30,7 @@ r.patch('/:id/holder', authenticate, requireAdmin, async (req: AuthRequest, res:
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 })
 
-r.patch('/:id/label', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
+r.patch('/:id/label', authenticate, requireGangMember, requireGangAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const c = await prisma.pokerCase.update({
       where: { id: req.params.id },

@@ -10,17 +10,18 @@ const parseDates = (body: any) => ({
   lastRoundTime:       body.lastRoundTime       ? new Date(body.lastRoundTime)       : undefined,
 })
 
-export const getAll      = async (_: AuthRequest, res: Response) => { try { res.json(await EventService.getAllEvents()) } catch (e: any) { res.status(500).json({ message: e.message }) } }
-export const getUpcoming = async (_: AuthRequest, res: Response) => { try { res.json(await EventService.getUpcomingEvent()) } catch (e: any) { res.status(500).json({ message: e.message }) } }
+export const getAll      = async (req: AuthRequest, res: Response) => { try { res.json(await EventService.getAllEvents(req.gangId)) } catch (e: any) { res.status(500).json({ message: e.message }) } }
+export const getUpcoming = async (req: AuthRequest, res: Response) => { try { res.json(await EventService.getUpcomingEvent(req.gangId)) } catch (e: any) { res.status(500).json({ message: e.message }) } }
 export const getOne      = async (req: AuthRequest, res: Response) => { try { res.json(await EventService.getEventById(req.params.id)) } catch { res.status(404).json({ message: 'Event not found' }) } }
-export const getActive = async (_: AuthRequest, res: Response) => {
-  try { res.json(await EventService.getActiveEvents()) }
+export const getActive = async (req: AuthRequest, res: Response) => {
+  try { res.json(await EventService.getActiveEvents(req.gangId)) }
   catch (e: any) { res.status(500).json({ message: e.message }) }
 }
 
 export const create = async (req: AuthRequest, res: Response) => {
   try {
-    res.status(201).json(await EventService.createEvent(parseDates(req.body), req.user!.userId))
+    const data = { ...parseDates(req.body), gangId: req.gangId }
+    res.status(201).json(await EventService.createEvent(data, req.user!.userId))
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 }
 

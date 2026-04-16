@@ -8,8 +8,10 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(cfg => {
-  const token = localStorage.getItem('accessToken')
+  const token  = localStorage.getItem('accessToken')
   if (token) cfg.headers.Authorization = `Bearer ${token}`
+  const gangId = localStorage.getItem('activeGangId')
+  if (gangId) cfg.headers['X-Gang-Id'] = gangId
   return cfg
 })
 
