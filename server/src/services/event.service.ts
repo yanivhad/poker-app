@@ -12,7 +12,7 @@ const DEFAULT_CHECKLIST = [
 
 export const getActiveEvents = (gangId?: string) =>
   prisma.event.findMany({
-    where:   { ...(gangId ? { gangId } : {}), status: { in: ['DRAFT', 'OPEN', 'CLOSED'] }, date: { gte: new Date() } },
+    where:   { ...(gangId ? { gangId } : {}), status: { in: ['DRAFT', 'OPEN', 'CLOSED'] } },
     orderBy: { date: 'asc' },
     include: eventInclude,
   })
