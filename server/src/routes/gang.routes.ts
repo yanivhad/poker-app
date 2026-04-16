@@ -1,39 +1,61 @@
 import { Router } from 'express'
 import { authenticate, AuthRequest } from '../middleware/auth'
 import { requireMaster } from '../middleware/role'
-import { requireGangMember, requireGangAdmin } from '../middleware/gang'
 import * as GangService from '../services/gang.service'
+import { prisma } from '../lib/prisma'
 import { Response } from 'express'
 
 const r = Router()
 
-// List gangs — MASTER sees all, others see their approved gangs + all gangs for browse
+// Helper: check if user is approved member of a specific gang (by URL param :id)
+const assertGangMember = async (req: AuthRequest, res: Response): Promise<boolean> => {
+  if (req.user?.role === 'MASTER' || req.user?.role === 'ADMIN') return true
+  const m = await prisma.gangMember.findUnique({
+    where: { gangId_userId: { gangId: req.params.id, userId: req.user!.userId } }
+  })
+  if (!m || m.status !== 'APPROVED') {
+    res.status(403).json({ message: 'Not a member of this gang' })
+    return false
+  }
+  req.gangRole = m.role as 'ADMIN' | 'MEMBER'
+  return true
+}
+
+const assertGangAdmin = (req: AuthRequest, res: Response): boolean => {
+  if (req.user?.role === 'MASTER' || req.user?.role === 'ADMIN') return true
+  if (req.gangRole !== 'ADMIN') {
+    res.status(403).json({ message: 'Gang admin access required' })
+    return false
+  }
+  return true
+}
+
+// List gangs — MASTER sees all with full members; players see all with their own status
 r.get('/', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    if (req.user?.role === 'MASTER' || req.user?.role === 'ADMIN') {
-      return res.json(await GangService.getAllGangs())
-    }
-    // For regular players: return all gangs with their own membership status
     const allGangs = await GangService.getAllGangs()
-    const myMemberships = await GangService.getUserGangs(req.user!.userId)
-    const myPending = await require('../lib/prisma').prisma.gangMember.findMany({
-      where: { userId: req.user!.userId },
-    })
-    const statusMap = new Map(myPending.map((m: any) => [m.gangId, m.status]))
+    if (req.user?.role === 'MASTER' || req.user?.role === 'ADMIN') {
+      return res.json(allGangs)
+    }
+    const myMemberships = await prisma.gangMember.findMany({ where: { userId: req.user!.userId } })
+    const statusMap = new Map(myMemberships.map(m => [m.gangId, { status: m.status, role: m.role }]))
     const gangs = allGangs.map((g: any) => ({
-      id:           g.id,
-      name:         g.name,
-      memberCount:  g.members.filter((m: any) => m.status === 'APPROVED').length,
-      myStatus:     statusMap.get(g.id) ?? null,
+      id:          g.id,
+      name:        g.name,
+      memberCount: g.members.filter((m: any) => m.status === 'APPROVED').length,
+      myStatus:    statusMap.get(g.id)?.status ?? null,
+      role:        statusMap.get(g.id)?.role   ?? null,
     }))
     res.json(gangs)
   } catch (e: any) { res.status(500).json({ message: e.message }) }
 })
 
-// Get single gang (members can see it)
-r.get('/:id', authenticate, requireGangMember, async (req: AuthRequest, res: Response) => {
-  try { res.json(await GangService.getGangById(req.params.id)) }
-  catch { res.status(404).json({ message: 'Gang not found' }) }
+// Get single gang
+r.get('/:id', authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!await assertGangMember(req, res)) return
+    res.json(await GangService.getGangById(req.params.id))
+  } catch { res.status(404).json({ message: 'Gang not found' }) }
 })
 
 // Create gang — MASTER only
@@ -43,9 +65,12 @@ r.post('/', authenticate, requireMaster, async (req: AuthRequest, res: Response)
 })
 
 // Update gang name — MASTER or gang admin
-r.put('/:id', authenticate, requireGangMember, requireGangAdmin, async (req: AuthRequest, res: Response) => {
-  try { res.json(await GangService.updateGang(req.params.id, req.body.name)) }
-  catch (e: any) { res.status(400).json({ message: e.message }) }
+r.put('/:id', authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!await assertGangMember(req, res)) return
+    if (!assertGangAdmin(req, res)) return
+    res.json(await GangService.updateGang(req.params.id, req.body.name))
+  } catch (e: any) { res.status(400).json({ message: e.message }) }
 })
 
 // Delete gang — MASTER only
@@ -55,8 +80,9 @@ r.delete('/:id', authenticate, requireMaster, async (req: AuthRequest, res: Resp
 })
 
 // Get members (gang admin sees PENDING too; members see APPROVED only)
-r.get('/:id/members', authenticate, requireGangMember, async (req: AuthRequest, res: Response) => {
+r.get('/:id/members', authenticate, async (req: AuthRequest, res: Response) => {
   try {
+    if (!await assertGangMember(req, res)) return
     const members = await GangService.getGangMembers(req.params.id)
     if (req.gangRole === 'ADMIN' || req.user?.role === 'MASTER' || req.user?.role === 'ADMIN') {
       return res.json(members)
@@ -72,8 +98,10 @@ r.post('/:id/join', authenticate, async (req: AuthRequest, res: Response) => {
 })
 
 // Approve/reject or change role — gang admin
-r.patch('/:id/members/:userId', authenticate, requireGangMember, requireGangAdmin, async (req: AuthRequest, res: Response) => {
+r.patch('/:id/members/:userId', authenticate, async (req: AuthRequest, res: Response) => {
   try {
+    if (!await assertGangMember(req, res)) return
+    if (!assertGangAdmin(req, res)) return
     const { role, status } = req.body
     res.json(await GangService.updateMember(req.params.id, req.params.userId, { role, status }))
   } catch (e: any) { res.status(400).json({ message: e.message }) }
@@ -82,18 +110,13 @@ r.patch('/:id/members/:userId', authenticate, requireGangMember, requireGangAdmi
 // Remove member — gang admin or self-leave
 r.delete('/:id/members/:userId', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const isSelf    = req.user!.userId === req.params.userId
-    const isMaster  = req.user?.role === 'MASTER' || req.user?.role === 'ADMIN'
-    const gangId    = req.params.id
+    const isSelf   = req.user!.userId === req.params.userId
+    const isMaster = req.user?.role === 'MASTER' || req.user?.role === 'ADMIN'
     if (!isSelf && !isMaster) {
-      // Check if requester is gang admin
-      const { prisma } = await import('../lib/prisma')
-      const m = await prisma.gangMember.findUnique({
-        where: { gangId_userId: { gangId, userId: req.user!.userId } }
-      })
-      if (!m || m.role !== 'ADMIN') return res.status(403).json({ message: 'Forbidden' })
+      if (!await assertGangMember(req, res)) return
+      if (!assertGangAdmin(req, res)) return
     }
-    res.json(await GangService.removeMember(gangId, req.params.userId))
+    res.json(await GangService.removeMember(req.params.id, req.params.userId))
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 })
 

@@ -10,7 +10,7 @@ export function shareEventOpen(event: any) {
   const playerNames: string[] = confirmed.map((r: any) => r.user?.nickname ?? 'Guest')
 
   const lines = [
-    '🃏 *Poker Night*',
+    '♠️ *Poker Night*',
     `📅 ${dateStr} | ${timeStr}`,
     `📍 ${event.format === 'ONLINE' ? 'Online' : 'In Person'}`,
     `👥 ${confirmed.length}/${event.maxSeats} registered`,
@@ -34,7 +34,7 @@ export function shareResults(event: any, results: any[]) {
   const sorted = [...results].sort((a, b) => b.netNIS - a.netNIS)
 
   const lines = [
-    `🃏 *Poker Night — ${dateStr}*`,
+    `♠️ *Poker Night — ${dateStr}*`,
     `👥 ${sorted.length} players`,
     '',
     ...sorted.map((r: any, i: number) => {
