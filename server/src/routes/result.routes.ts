@@ -77,7 +77,10 @@ r.post('/:id/results', authenticate, async (req: AuthRequest, res: Response) => 
         })
       }
     }
-    await prisma.event.update({ where: { id: eventId }, data: { status: 'DONE' } })
+    await prisma.event.update({
+      where: { id: eventId },
+      data:  { status: 'DONE', resultsSubmittedById: req.user!.userId, resultsSubmittedAt: new Date() }
+    })
     res.json({ message: 'Results saved' })
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 })

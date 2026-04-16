@@ -113,6 +113,15 @@ if (loading) return <Spinner />
         📝 Enter Results
       </h1>
 
+      {event?.resultsSubmittedBy && (
+        <div style={{ background: '#1f2937', border: '1px solid #374151', borderRadius: '0.5rem', padding: '0.5rem 0.75rem', marginBottom: '1rem', fontSize: '0.8rem', color: '#9ca3af' }}>
+          Last submitted by <span style={{ color: 'white', fontWeight: 600 }}>{event.resultsSubmittedBy.nickname}</span>
+          {event.resultsSubmittedAt && (
+            <> · {new Date(event.resultsSubmittedAt).toLocaleString('en-IL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</>
+          )}
+        </div>
+      )}
+
       {/* Add players */}
       <div className="card" style={{ marginBottom: '1rem' }}>
         <h2 style={{ fontWeight: 600, marginBottom: 8 }}>Who Played?</h2>

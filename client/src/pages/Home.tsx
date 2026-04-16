@@ -201,14 +201,16 @@ export default function HomePage() {
                       ✅ Open Registration
                     </button>
                   )}
+                  {['OPEN', 'CLOSED'].includes(event.status) && (myReg?.status === 'CONFIRMED' || user?.role === 'ADMIN' || user?.role === 'MASTER') && (
+                    <button
+                      onClick={() => navigate(`/events/${event.id}/results`)}
+                      style={{ flex: 1, padding: '0.375rem', borderRadius: '0.5rem', background: '#374151', color: 'white', border: '1px solid #4b5563', cursor: 'pointer', fontSize: '0.875rem' }}
+                    >
+                      📝 Enter Results
+                    </button>
+                  )}
                   {user?.role === 'ADMIN' && ['OPEN', 'CLOSED'].includes(event.status) && (
                     <>
-                      <button
-                        onClick={() => navigate(`/events/${event.id}/results`)}
-                        style={{ flex: 1, padding: '0.375rem', borderRadius: '0.5rem', background: '#374151', color: 'white', border: '1px solid #4b5563', cursor: 'pointer', fontSize: '0.875rem' }}
-                      >
-                        📝 Enter Results
-                      </button>
                       {event.status === 'OPEN' && (
                         <button
                           onClick={() => handleStatusChange(event.id, 'CLOSED')}
