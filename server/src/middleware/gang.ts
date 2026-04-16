@@ -2,17 +2,19 @@ import { Response, NextFunction } from 'express'
 import { AuthRequest } from './auth'
 import { prisma } from '../lib/prisma'
 
-// Reads X-Gang-Id header, verifies user is an APPROVED member, sets req.gangId + req.gangRole
+// Reads X-Gang-Id header, verifies user is an APPROVED member, sets req.gangId + req.gangRole.
+// MASTER/ADMIN bypass membership check and may omit the header (all data returned unfiltered).
 export const requireGangMember = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const gangId = req.headers['x-gang-id'] as string | undefined
-  if (!gangId) return res.status(400).json({ message: 'X-Gang-Id header required' })
+  const isMaster = req.user?.role === 'MASTER' || req.user?.role === 'ADMIN'
+  const gangId   = req.headers['x-gang-id'] as string | undefined
 
-  // MASTER bypasses membership check
-  if (req.user?.role === 'MASTER' || req.user?.role === 'ADMIN') {
-    req.gangId   = gangId
+  if (isMaster) {
+    req.gangId   = gangId   // may be undefined — callers handle that with gangId ? filter : no-filter
     req.gangRole = 'ADMIN'
     return next()
   }
+
+  if (!gangId) return res.status(400).json({ message: 'X-Gang-Id header required' })
 
   const membership = await prisma.gangMember.findUnique({
     where: { gangId_userId: { gangId, userId: req.user!.userId } }

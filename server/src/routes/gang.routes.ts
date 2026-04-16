@@ -30,13 +30,24 @@ const assertGangAdmin = (req: AuthRequest, res: Response): boolean => {
   return true
 }
 
-// List gangs — MASTER sees all with full members; players see all with their own status
+// List gangs — always returns { id, name, memberCount, myStatus, role } for all users.
+// MASTER/ADMIN get myStatus='APPROVED', role='ADMIN' for every gang.
 r.get('/', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const allGangs = await GangService.getAllGangs()
-    if (req.user?.role === 'MASTER' || req.user?.role === 'ADMIN') {
-      return res.json(allGangs)
+    const isMaster = req.user?.role === 'MASTER' || req.user?.role === 'ADMIN'
+
+    if (isMaster) {
+      const gangs = allGangs.map((g: any) => ({
+        id:          g.id,
+        name:        g.name,
+        memberCount: g.members.filter((m: any) => m.status === 'APPROVED').length,
+        myStatus:    'APPROVED',
+        role:        'ADMIN',
+      }))
+      return res.json(gangs)
     }
+
     const myMemberships = await prisma.gangMember.findMany({ where: { userId: req.user!.userId } })
     const statusMap = new Map(myMemberships.map(m => [m.gangId, { status: m.status, role: m.role }]))
     const gangs = allGangs.map((g: any) => ({
