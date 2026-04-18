@@ -19,7 +19,7 @@ export default function AppShell() {
     { to: '/players', label: '👥 Players' },
     { to: '/cases',   label: '🎲 Kits'    },
     { to: '/gangs',   label: '🏴 Gang'    },
-    { to: '/profile', label: '👤 Player'  },
+    { to: '/profile', label: '👤 Profile' },
     { to: '/about',   label: 'ℹ️ About'   },
   ]
 
