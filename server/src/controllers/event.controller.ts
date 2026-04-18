@@ -20,7 +20,7 @@ export const getActive = async (req: AuthRequest, res: Response) => {
 
 export const create = async (req: AuthRequest, res: Response) => {
   try {
-    const data = { ...parseDates(req.body), gangId: req.gangId }
+    const data = { ...parseDates(req.body), gangId: req.gangId ?? req.body.gangId ?? null }
     res.status(201).json(await EventService.createEvent(data, req.user!.userId))
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 }
