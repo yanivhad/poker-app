@@ -102,9 +102,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const gangsRes = await api.get('/gangs').catch(() => ({ data: [] }))
         const gangsData: Gang[] = Array.isArray(gangsRes.data)
           ? gangsRes.data.filter((g: any) => g.myStatus === 'APPROVED' || g.role).map((g: any) => ({
-              id:   g.id,
-              name: g.name,
-              role: g.role ?? 'MEMBER',
+              id:           g.id,
+              name:         g.name,
+              role:         g.role ?? 'MEMBER',
+              whatsappLink: g.whatsappLink ?? null,
             }))
           : []
         set({ user: { id: data.id, nickname: data.nickname, role: data.role }, ...hydrateGangs(gangsData), loading: false })
