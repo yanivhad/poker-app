@@ -112,8 +112,8 @@ model User {
 
 model Gang {
   id        String   @id @default(cuid())
-  name      String   @unique
-  phone     String?
+  name          String   @unique
+  whatsappLink  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

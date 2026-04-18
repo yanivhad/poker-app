@@ -80,8 +80,8 @@ r.put('/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     if (!await assertGangMember(req, res)) return
     if (!assertGangAdmin(req, res)) return
-    const { name, phone } = req.body
-    res.json(await GangService.updateGang(req.params.id, { name, phone }))
+    const { name, whatsappLink } = req.body
+    res.json(await GangService.updateGang(req.params.id, { name, whatsappLink }))
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 })
 

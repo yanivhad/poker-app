@@ -19,8 +19,8 @@ export default function GangDetailPage() {
   const activeGang = useAuthStore(s => s.activeGang)
   const [members, setMembers]   = useState<any[]>([])
   const [gang, setGang]         = useState<any>(null)
-  const [editPhone, setEditPhone] = useState('')
-  const [savingPhone, setSavingPhone] = useState(false)
+  const [editLink, setEditLink] = useState('')
+  const [savingLink, setSavingLink] = useState(false)
   const [loading, setLoading]   = useState(true)
   const { toast, showToast, hideToast } = useToast()
 
@@ -34,22 +34,22 @@ export default function GangDetailPage() {
         getGangMembers(id!),
       ])
       setGang(gangData)
-      setEditPhone(gangData.phone ?? '')
+      setEditLink(gangData.whatsappLink ?? '')
       setMembers(membersData)
     } catch {
       showToast('Failed to load gang', 'error')
     } finally { setLoading(false) }
   }
 
-  const handleSavePhone = async () => {
-    setSavingPhone(true)
+  const handleSaveLink = async () => {
+    setSavingLink(true)
     try {
-      const updated = await updateGang(id!, { phone: editPhone.trim() || null })
+      const updated = await updateGang(id!, { whatsappLink: editLink.trim() || null })
       setGang(updated)
-      showToast('WhatsApp number saved!')
+      showToast('WhatsApp group link saved!')
     } catch (e: any) {
       showToast(e.response?.data?.message || 'Failed to save', 'error')
-    } finally { setSavingPhone(false) }
+    } finally { setSavingLink(false) }
   }
 
   useEffect(() => { load() }, [id])
@@ -100,31 +100,33 @@ export default function GangDetailPage() {
         <h1 style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '1.25rem' }}>🏴 Gang Members</h1>
       </div>
 
-      {/* WhatsApp group number — gang admin only */}
+      {/* WhatsApp group link — gang admin only */}
       {isGangAdmin && (
         <div className="card" style={{ marginBottom: '1rem' }}>
           <p style={{ color: '#9ca3af', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: 8 }}>
-            📱 WhatsApp Group Number
+            💬 WhatsApp Group Link
           </p>
           <p style={{ color: '#6b7280', fontSize: '0.75rem', marginBottom: 8 }}>
-            New join requests will open a WhatsApp message to this number. Include country code (e.g. 972501234567).
+            Paste the group invite link (https://chat.whatsapp.com/...). New join requests will open this group.
           </p>
           <div style={{ display: 'flex', gap: 8 }}>
             <input
-              type="tel"
-              placeholder="972501234567"
-              value={editPhone}
-              onChange={e => setEditPhone(e.target.value)}
+              type="url"
+              placeholder="https://chat.whatsapp.com/..."
+              value={editLink}
+              onChange={e => setEditLink(e.target.value)}
               style={{ flex: 1, background: '#1a1a2e', color: 'white', border: '1px solid #4b5563', borderRadius: '0.5rem', padding: '0.375rem 0.75rem', fontSize: '0.875rem' }}
             />
             <button
-              onClick={handleSavePhone}
-              disabled={savingPhone}
+              onClick={handleSaveLink}
+              disabled={savingLink}
               style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.375rem 0.75rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' }}
-            >{savingPhone ? '...' : 'Save'}</button>
+            >{savingLink ? '...' : 'Save'}</button>
           </div>
-          {gang?.phone && (
-            <p style={{ color: '#16a34a', fontSize: '0.75rem', marginTop: 6 }}>✓ Set to {gang.phone}</p>
+          {gang?.whatsappLink && (
+            <p style={{ color: '#16a34a', fontSize: '0.75rem', marginTop: 6 }}>
+              ✓ Link set · <a href={gang.whatsappLink} target="_blank" rel="noopener noreferrer" style={{ color: '#16a34a' }}>Test link</a>
+            </p>
           )}
         </div>
       )}

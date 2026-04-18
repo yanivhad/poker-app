@@ -23,7 +23,7 @@ export const getGangById = (id: string) =>
 export const createGang = (name: string) =>
   prisma.gang.create({ data: { name } })
 
-export const updateGang = (id: string, data: { name?: string; phone?: string | null }) =>
+export const updateGang = (id: string, data: { name?: string; whatsappLink?: string | null }) =>
   prisma.gang.update({ where: { id }, data })
 
 export const deleteGang = (id: string) =>
@@ -43,7 +43,7 @@ export const requestJoin = async (gangId: string, userId: string) => {
 
   const [user, gang] = await Promise.all([
     prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { role: true, nickname: true } }),
-    prisma.gang.findUniqueOrThrow({ where: { id: gangId }, select: { phone: true, name: true } }),
+    prisma.gang.findUniqueOrThrow({ where: { id: gangId }, select: { whatsappLink: true, name: true } }),
   ])
   const isGlobalAdmin = user.role === 'ADMIN' || user.role === 'MASTER'
   const autoApprove   = isGlobalAdmin
@@ -62,7 +62,7 @@ export const requestJoin = async (gangId: string, userId: string) => {
     })
   }
 
-  return { ...member, gangPhone: gang.phone, gangName: gang.name, nickname: user.nickname }
+  return { ...member, gangWhatsappLink: gang.whatsappLink, gangName: gang.name, nickname: user.nickname }
 }
 
 export const updateMember = (gangId: string, userId: string, data: { role?: 'ADMIN' | 'MEMBER'; status?: 'APPROVED' | 'REJECTED' }) =>
