@@ -148,14 +148,14 @@ model Event {
   onlineLink          String?
   onlinePassword      String?
   hostId                String?
-  gangId                String?
+  gangId                String
   resultsSubmittedById  String?
   resultsSubmittedAt    DateTime?
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @updatedAt
 
   host               User?           @relation("HostedEvents", fields: [hostId], references: [id])
-  gang               Gang?           @relation(fields: [gangId], references: [id])
+  gang               Gang            @relation(fields: [gangId], references: [id])
   resultsSubmittedBy User?           @relation("ResultsSubmitter", fields: [resultsSubmittedById], references: [id])
   registrations Registration[]
   eventPlayers  EventPlayer[]

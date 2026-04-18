@@ -18,30 +18,33 @@ export const getActiveEvents = (gangId?: string) =>
   })
 
   export const createEvent = async (data: any, createdById: string) => {
-    // Max 2 active events
+    if (!data.gangId) throw new Error('gangId is required to create an event')
+
+    // Max 2 active events per gang
     const activeCount = await prisma.event.count({
-      where: { status: { in: ['DRAFT', 'OPEN', 'CLOSED'] } }
+      where: { gangId: data.gangId, status: { in: ['DRAFT', 'OPEN', 'CLOSED'] } }
     })
     if (activeCount >= 2)
-      throw new Error('Maximum of 2 active events allowed')
-  
-    // No events within 3 hours of each other
+      throw new Error('Maximum of 2 active events allowed for this gang')
+
+    // No events within 3 hours of each other (per gang)
     const threeHoursBefore = new Date(data.date)
     threeHoursBefore.setHours(threeHoursBefore.getHours() - 3)
     const threeHoursAfter = new Date(data.date)
     threeHoursAfter.setHours(threeHoursAfter.getHours() + 3)
-  
+
     const conflicting = await prisma.event.findFirst({
       where: {
+        gangId: data.gangId,
         status: { in: ['DRAFT', 'OPEN', 'CLOSED'] },
         date:   { gte: threeHoursBefore, lte: threeHoursAfter },
       }
     })
     if (conflicting)
       throw new Error('Another event is already scheduled within 3 hours of this time')
-  
+
     const status = new Date(data.registrationOpensAt) <= new Date() ? 'OPEN' : 'DRAFT'
-    const event  = await prisma.event.create({ data: { ...data, status, gangId: data.gangId ?? null } })
+    const event  = await prisma.event.create({ data: { ...data, status } })
   
     if (data.format === 'IN_PERSON') {
       await prisma.checklistItem.createMany({
