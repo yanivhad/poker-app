@@ -12,10 +12,10 @@ export const login = async (nickname: string, password: string) => {
 
   const memberships = await prisma.gangMember.findMany({
     where:   { userId: user.id, status: 'APPROVED' },
-    include: { gang: { select: { id: true, name: true } } },
+    include: { gang: { select: { id: true, name: true, whatsappLink: true } } },
     orderBy: { createdAt: 'asc' },
   })
-  const gangs = memberships.map(m => ({ id: m.gang.id, name: m.gang.name, role: m.role }))
+  const gangs = memberships.map(m => ({ id: m.gang.id, name: m.gang.name, role: m.role, whatsappLink: m.gang.whatsappLink }))
 
   return {
     accessToken:  signAccess(user.id, user.role),

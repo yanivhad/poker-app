@@ -17,8 +17,9 @@ export default function HomePage() {
   const [actioning, setActioning]   = useState<string | null>(null)
   const [checklists, setChecklists] = useState<Record<string, any[]>>({})
   const [newItems, setNewItems]     = useState<Record<string, string>>({})
-  const user     = useAuthStore(s => s.user)
-  const navigate = useNavigate()
+  const user       = useAuthStore(s => s.user)
+  const activeGang = useAuthStore(s => s.activeGang)
+  const navigate   = useNavigate()
   const { toast, showToast, hideToast } = useToast()
 
   const load = async () => {
@@ -46,6 +47,9 @@ export default function HomePage() {
       await registerForEvent(eventId)
       await load()
       showToast('Registered successfully!')
+      if (activeGang?.whatsappLink) {
+        window.open(activeGang.whatsappLink, '_blank')
+      }
     } catch (e: any) {
       showToast(e.response?.data?.message || 'Error', 'error')
     } finally { setActioning(null) }

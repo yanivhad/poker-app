@@ -39,11 +39,12 @@ r.get('/', authenticate, async (req: AuthRequest, res: Response) => {
 
     if (isMaster) {
       const gangs = allGangs.map((g: any) => ({
-        id:          g.id,
-        name:        g.name,
-        memberCount: g.members.filter((m: any) => m.status === 'APPROVED').length,
-        myStatus:    'APPROVED',
-        role:        'ADMIN',
+        id:           g.id,
+        name:         g.name,
+        whatsappLink: g.whatsappLink ?? null,
+        memberCount:  g.members.filter((m: any) => m.status === 'APPROVED').length,
+        myStatus:     'APPROVED',
+        role:         'ADMIN',
       }))
       return res.json(gangs)
     }
@@ -51,11 +52,12 @@ r.get('/', authenticate, async (req: AuthRequest, res: Response) => {
     const myMemberships = await prisma.gangMember.findMany({ where: { userId: req.user!.userId } })
     const statusMap = new Map(myMemberships.map(m => [m.gangId, { status: m.status, role: m.role }]))
     const gangs = allGangs.map((g: any) => ({
-      id:          g.id,
-      name:        g.name,
-      memberCount: g.members.filter((m: any) => m.status === 'APPROVED').length,
-      myStatus:    statusMap.get(g.id)?.status ?? null,
-      role:        statusMap.get(g.id)?.role   ?? null,
+      id:           g.id,
+      name:         g.name,
+      whatsappLink: g.whatsappLink ?? null,
+      memberCount:  g.members.filter((m: any) => m.status === 'APPROVED').length,
+      myStatus:     statusMap.get(g.id)?.status ?? null,
+      role:         statusMap.get(g.id)?.role   ?? null,
     }))
     res.json(gangs)
   } catch (e: any) { res.status(500).json({ message: e.message }) }
