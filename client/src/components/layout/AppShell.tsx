@@ -14,13 +14,13 @@ export default function AppShell() {
 
   const navItems = [
     { to: '/',        label: '🏠 Home'    },
-    { to: '/history', label: '📅 History' },
-    { to: '/cases',   label: '🎲 Kits'    },
     { to: '/stats',   label: '📊 Stats'   },
-    { to: '/profile', label: '👤 Profile' },
+    { to: '/history', label: '📅 History' },
+    { to: '/players', label: '👥 Players' },
+    { to: '/cases',   label: '🎲 Kits'    },
+    { to: '/gangs',   label: '🏴 Gang'    },
+    { to: '/profile', label: '👤 Player'  },
     { to: '/about',   label: 'ℹ️ About'   },
-    { to: '/gangs',   label: '🏴 Gangs'   },
-    ...(isGangAdmin ? [{ to: '/players', label: '👥 Players' }] : []),
   ]
 
   return (
