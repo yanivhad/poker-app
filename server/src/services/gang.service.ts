@@ -23,8 +23,8 @@ export const getGangById = (id: string) =>
 export const createGang = (name: string) =>
   prisma.gang.create({ data: { name } })
 
-export const updateGang = (id: string, name: string) =>
-  prisma.gang.update({ where: { id }, data: { name } })
+export const updateGang = (id: string, data: { name?: string; phone?: string | null }) =>
+  prisma.gang.update({ where: { id }, data })
 
 export const deleteGang = (id: string) =>
   prisma.gang.delete({ where: { id } })
@@ -41,22 +41,28 @@ export const requestJoin = async (gangId: string, userId: string) => {
     where: { gangId_userId: { gangId, userId } }
   })
 
-  // ADMIN/MASTER users are auto-approved as gang ADMIN
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { role: true } })
+  const [user, gang] = await Promise.all([
+    prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { role: true, nickname: true } }),
+    prisma.gang.findUniqueOrThrow({ where: { id: gangId }, select: { phone: true, name: true } }),
+  ])
   const isGlobalAdmin = user.role === 'ADMIN' || user.role === 'MASTER'
   const autoApprove   = isGlobalAdmin
 
+  let member
   if (existing) {
     if (existing.status === 'APPROVED') throw new Error('Already a member')
     if (existing.status === 'PENDING' && !autoApprove) throw new Error('Request already pending')
-    return prisma.gangMember.update({
+    member = await prisma.gangMember.update({
       where: { gangId_userId: { gangId, userId } },
       data:  { status: autoApprove ? 'APPROVED' : 'PENDING', role: autoApprove ? 'ADMIN' : existing.role },
     })
+  } else {
+    member = await prisma.gangMember.create({
+      data: { gangId, userId, status: autoApprove ? 'APPROVED' : 'PENDING', role: autoApprove ? 'ADMIN' : 'MEMBER' }
+    })
   }
-  return prisma.gangMember.create({
-    data: { gangId, userId, status: autoApprove ? 'APPROVED' : 'PENDING', role: autoApprove ? 'ADMIN' : 'MEMBER' }
-  })
+
+  return { ...member, gangPhone: gang.phone, gangName: gang.name, nickname: user.nickname }
 }
 
 export const updateMember = (gangId: string, userId: string, data: { role?: 'ADMIN' | 'MEMBER'; status?: 'APPROVED' | 'REJECTED' }) =>

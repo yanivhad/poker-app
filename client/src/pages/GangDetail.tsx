@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/auth.store'
-import { getGangMembers, updateGangMember, removeGangMember } from '../api/gangs.api'
+import { getGangDetail, getGangMembers, updateGang, updateGangMember, removeGangMember } from '../api/gangs.api'
 import Spinner from '../components/ui/Spinner'
 import Toast from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
@@ -17,8 +17,11 @@ export default function GangDetailPage() {
   const navigate   = useNavigate()
   const user       = useAuthStore(s => s.user)
   const activeGang = useAuthStore(s => s.activeGang)
-  const [members, setMembers] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [members, setMembers]   = useState<any[]>([])
+  const [gang, setGang]         = useState<any>(null)
+  const [editPhone, setEditPhone] = useState('')
+  const [savingPhone, setSavingPhone] = useState(false)
+  const [loading, setLoading]   = useState(true)
   const { toast, showToast, hideToast } = useToast()
 
   const isMaster   = user?.role === 'MASTER' || user?.role === 'ADMIN'
@@ -26,11 +29,27 @@ export default function GangDetailPage() {
 
   const load = async () => {
     try {
-      const data = await getGangMembers(id!)
-      setMembers(data)
+      const [gangData, membersData] = await Promise.all([
+        getGangDetail(id!),
+        getGangMembers(id!),
+      ])
+      setGang(gangData)
+      setEditPhone(gangData.phone ?? '')
+      setMembers(membersData)
     } catch {
-      showToast('Failed to load members', 'error')
+      showToast('Failed to load gang', 'error')
     } finally { setLoading(false) }
+  }
+
+  const handleSavePhone = async () => {
+    setSavingPhone(true)
+    try {
+      const updated = await updateGang(id!, { phone: editPhone.trim() || null })
+      setGang(updated)
+      showToast('WhatsApp number saved!')
+    } catch (e: any) {
+      showToast(e.response?.data?.message || 'Failed to save', 'error')
+    } finally { setSavingPhone(false) }
   }
 
   useEffect(() => { load() }, [id])
@@ -80,6 +99,35 @@ export default function GangDetailPage() {
         <button onClick={() => navigate('/gangs')} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1.25rem' }}>←</button>
         <h1 style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '1.25rem' }}>🏴 Gang Members</h1>
       </div>
+
+      {/* WhatsApp group number — gang admin only */}
+      {isGangAdmin && (
+        <div className="card" style={{ marginBottom: '1rem' }}>
+          <p style={{ color: '#9ca3af', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: 8 }}>
+            📱 WhatsApp Group Number
+          </p>
+          <p style={{ color: '#6b7280', fontSize: '0.75rem', marginBottom: 8 }}>
+            New join requests will open a WhatsApp message to this number. Include country code (e.g. 972501234567).
+          </p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              type="tel"
+              placeholder="972501234567"
+              value={editPhone}
+              onChange={e => setEditPhone(e.target.value)}
+              style={{ flex: 1, background: '#1a1a2e', color: 'white', border: '1px solid #4b5563', borderRadius: '0.5rem', padding: '0.375rem 0.75rem', fontSize: '0.875rem' }}
+            />
+            <button
+              onClick={handleSavePhone}
+              disabled={savingPhone}
+              style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.375rem 0.75rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' }}
+            >{savingPhone ? '...' : 'Save'}</button>
+          </div>
+          {gang?.phone && (
+            <p style={{ color: '#16a34a', fontSize: '0.75rem', marginTop: 6 }}>✓ Set to {gang.phone}</p>
+          )}
+        </div>
+      )}
 
       {/* Pending requests — gang admin only */}
       {isGangAdmin && pending.length > 0 && (

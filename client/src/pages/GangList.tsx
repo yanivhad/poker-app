@@ -53,9 +53,15 @@ export default function GangListPage() {
 
   const handleJoin = async (id: string) => {
     try {
-      await requestJoinGang(id)
+      const result = await requestJoinGang(id)
       await load()
       showToast('Join request sent! Waiting for approval.')
+      if (result?.gangPhone) {
+        const msg = encodeURIComponent(
+          `Hi! ${result.nickname} has requested to join the ${result.gangName} gang on the poker app. Please approve or reject in the app.`
+        )
+        window.open(`https://wa.me/${result.gangPhone}?text=${msg}`, '_blank')
+      }
     } catch (e: any) {
       showToast(e.response?.data?.message || 'Failed to request', 'error')
     }
