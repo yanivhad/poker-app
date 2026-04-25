@@ -88,15 +88,19 @@ r.post('/:id/results', authenticate, async (req: AuthRequest, res: Response) => 
 // Get results
 r.get('/:id/results', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const results = await prisma.result.findMany({
-      where:   { eventId: req.params.id },
-      include: {
-        user:  { select: { id: true, nickname: true } },
-        guest: true,
-        buyIn: { select: { count: true } },
-      }
-    })
-    res.json(results)
+    const eventId = req.params.id
+    const [results, buyIns] = await Promise.all([
+      prisma.result.findMany({
+        where:   { eventId },
+        include: {
+          user:  { select: { id: true, nickname: true } },
+          guest: true,
+        }
+      }),
+      prisma.buyIn.findMany({ where: { eventId } }),
+    ])
+    const buyInMap = new Map(buyIns.map(b => [b.userId ?? b.guestId, b]))
+    res.json(results.map(r => ({ ...r, buyIn: buyInMap.get(r.userId ?? r.guestId) ?? null })))
   } catch (e: any) { res.status(500).json({ message: e.message }) }
 })
 
