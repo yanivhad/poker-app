@@ -21,6 +21,8 @@ export default function CasesPage() {
       ])
       setCases(casesRes.data)
       setUsers(usersRes.data)
+    } catch {
+      showToast('Failed to load kits', 'error')
     } finally {
       setLoading(false)
     }

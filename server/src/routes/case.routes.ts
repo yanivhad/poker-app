@@ -11,7 +11,7 @@ const r = Router()
 r.get('/', authenticate, requireGangMember, async (req: AuthRequest, res: Response) => {
   try {
     const cases = await prisma.pokerCase.findMany({
-      where:   req.gangId ? { gangId: req.gangId } : {},
+      where:   req.gangId ? { OR: [{ gangId: req.gangId }, { gangId: null }] } : {},
       include: { heldBy: { select: { id: true, nickname: true } } },
       orderBy: { type: 'asc' }
     })
