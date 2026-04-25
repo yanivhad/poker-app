@@ -90,7 +90,11 @@ r.get('/:id/results', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const results = await prisma.result.findMany({
       where:   { eventId: req.params.id },
-      include: { user: { select: { id: true, nickname: true } }, guest: true }
+      include: {
+        user:  { select: { id: true, nickname: true } },
+        guest: true,
+        buyIn: { select: { count: true } },
+      }
     })
     res.json(results)
   } catch (e: any) { res.status(500).json({ message: e.message }) }
