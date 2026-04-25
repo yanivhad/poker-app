@@ -1,0 +1,23 @@
+[
+  {
+    "date": "2025-11-13T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "yaniv",
+    "players": [
+      { "nickname": "yaniv",  "buyIns": 2, "finalChips": 1450 },
+      { "nickname": "moshe",  "buyIns": 1, "finalChips": 0    },
+      { "nickname": "dani",   "buyIns": 3, "finalChips": 2100 },
+      { "name": "Guest Guy",  "buyIns": 1, "finalChips": 300  }
+    ]
+  },
+  {
+    "date": "2025-12-04T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "players": [
+      { "nickname": "yaniv",  "buyIns": 1, "finalChips": 800 },
+      { "nickname": "avi",    "buyIns": 2, "finalChips": 950 }
+    ]
+  }
+]
