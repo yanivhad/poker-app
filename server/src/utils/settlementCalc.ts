@@ -1,4 +1,7 @@
-// Minimizes the number of transactions to settle all debts
+const round25 = (n: number) => Math.round(n / 25) * 25
+
+// Minimizes the number of transactions to settle all debts.
+// Transfer amounts are rounded to the nearest 25 NIS.
 export function calculateSettlements(balances: { id: string; name: string; netNIS: number }[]) {
   const creditors = balances.filter(b => b.netNIS > 0).sort((a, b) => b.netNIS - a.netNIS)
   const debtors   = balances.filter(b => b.netNIS < 0).sort((a, b) => a.netNIS - b.netNIS)
@@ -10,14 +13,15 @@ export function calculateSettlements(balances: { id: string; name: string; netNI
   const debt = debtors.map(d => ({ ...d, remaining: Math.abs(d.netNIS) }))
 
   while (i < debt.length && j < cred.length) {
-    const amount = Math.min(debt[i].remaining, cred[j].remaining)
-    if (amount > 0.01) {
+    const amount        = Math.min(debt[i].remaining, cred[j].remaining)
+    const roundedAmount = round25(amount)
+    if (roundedAmount > 0) {
       transactions.push({
         from:     debt[i].id,
         fromName: debt[i].name,
         to:       cred[j].id,
         toName:   cred[j].name,
-        amount:   Math.round(amount),
+        amount:   roundedAmount,
       })
     }
     debt[i].remaining -= amount
