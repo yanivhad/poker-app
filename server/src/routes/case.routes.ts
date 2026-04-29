@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import { authenticate } from '../middleware/auth'
-import { requireAdmin } from '../middleware/role'
 import { requireGangMember, requireGangAdmin } from '../middleware/gang'
 import { prisma } from '../lib/prisma'
 import { AuthRequest } from '../middleware/auth'
@@ -11,7 +10,7 @@ const r = Router()
 r.get('/', authenticate, requireGangMember, async (req: AuthRequest, res: Response) => {
   try {
     const cases = await prisma.pokerCase.findMany({
-      where:   req.gangId ? { OR: [{ gangId: req.gangId }, { gangId: null }] } : {},
+      where:   req.gangId ? { gangId: req.gangId } : {},
       include: { heldBy: { select: { id: true, nickname: true } } },
       orderBy: { type: 'asc' }
     })
