@@ -100,6 +100,7 @@ model User {
   hostedEvents        Event[]         @relation("HostedEvents")
   submittedResults    Event[]         @relation("ResultsSubmitter")
   registrations       Registration[]
+  guestRegistrations  GuestRegistration[]
   eventPlayers        EventPlayer[]
   buyIns              BuyIn[]
   results             Result[]
@@ -158,13 +159,14 @@ model Event {
   host               User?           @relation("HostedEvents", fields: [hostId], references: [id])
   gang               Gang            @relation(fields: [gangId], references: [id])
   resultsSubmittedBy User?           @relation("ResultsSubmitter", fields: [resultsSubmittedById], references: [id])
-  registrations Registration[]
-  eventPlayers  EventPlayer[]
-  buyIns        BuyIn[]
-  results       Result[]
-  settlements   Settlement[]
-  checklist     ChecklistItem[]
-  guests        Guest[]
+  registrations      Registration[]
+  guestRegistrations GuestRegistration[]
+  eventPlayers       EventPlayer[]
+  buyIns             BuyIn[]
+  results            Result[]
+  settlements        Settlement[]
+  checklist          ChecklistItem[]
+  guests             Guest[]
 }
 
 model Registration {
@@ -179,6 +181,22 @@ model Registration {
   user  User  @relation(fields: [userId],  references: [id])
 
   @@unique([eventId, userId])
+}
+
+model GuestRegistration {
+  id             String             @id @default(cuid())
+  eventId        String
+  registeredById String
+  name           String
+  phone          String?
+  status         RegistrationStatus @default(CONFIRMED)
+  position       Int
+  registeredAt   DateTime           @default(now())
+
+  event        Event @relation(fields: [eventId], references: [id])
+  registeredBy User  @relation(fields: [registeredById], references: [id])
+
+  @@unique([eventId, registeredById, name])
 }
 
 model EventPlayer {
@@ -200,6 +218,7 @@ model EventPlayer {
 model Guest {
   id        String   @id @default(cuid())
   name      String
+  phone     String?
   eventId   String
   createdAt DateTime @default(now())
 

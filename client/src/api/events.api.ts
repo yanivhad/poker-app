@@ -3,7 +3,7 @@ import api from './axios'
 export const getUpcomingEvent = () => api.get('/events/upcoming').then(r => r.data)
 export const getAllEvents      = () => api.get('/events').then(r => r.data)
 export const getEventById     = (id: string) => api.get(`/events/${id}`).then(r => r.data)
-export const registerForEvent = (id: string) => api.post(`/events/${id}/register`).then(r => r.data)
+export const registerForEvent = (id: string, guests: { name: string; phone?: string }[] = []) => api.post(`/events/${id}/register`, { guests }).then(r => r.data)
 export const cancelRegistration = (id: string) => api.delete(`/events/${id}/register`).then(r => r.data)
 export const createEvent      = (data: any) => api.post('/events', data).then(r => r.data)
 export const updateEvent      = (id: string, data: any) => api.put(`/events/${id}`, data).then(r => r.data)

@@ -23,7 +23,8 @@ r.post('/:id/players', authenticate, async (req: AuthRequest, res: Response) => 
     const { userId, guestName, source } = req.body
     const eventId = req.params.id
     if (guestName) {
-      const guest = await prisma.guest.create({ data: { name: guestName, eventId } })
+      const preReg = await prisma.guestRegistration.findFirst({ where: { eventId, name: guestName } })
+      const guest  = await prisma.guest.create({ data: { name: guestName, phone: preReg?.phone ?? null, eventId } })
       const ep = await prisma.eventPlayer.create({
         data: { eventId, guestId: guest.id, source: 'GUEST' },
         include: { guest: true }
@@ -51,8 +52,9 @@ r.post('/:id/results', authenticate, async (req: AuthRequest, res: Response) => 
   try {
     const { results } = req.body
     const eventId = req.params.id
+    const round25 = (n: number) => Math.round(n / 25) * 25
     for (const result of results) {
-      const netNIS = (result.finalChips - result.buyIns * 500) / 10
+      const netNIS = round25((result.finalChips - result.buyIns * 500) / 10)
       if (result.userId) {
         await prisma.buyIn.upsert({
           where:  { eventId_userId: { eventId, userId: result.userId } },
@@ -114,7 +116,18 @@ r.get('/:id/settlements', authenticate, async (req: AuthRequest, res: Response) 
         toUser:   { select: { id: true, nickname: true } },
       }
     })
-    res.json(settlements)
+    const guestIds = [...new Set([
+      ...settlements.map(s => s.fromGuestId).filter((id): id is string => !!id),
+      ...settlements.map(s => s.toGuestId).filter((id): id is string => !!id),
+    ])]
+    const guestMap = guestIds.length > 0
+      ? new Map((await prisma.guest.findMany({ where: { id: { in: guestIds } }, select: { id: true, name: true, phone: true } })).map(g => [g.id, g]))
+      : new Map()
+    res.json(settlements.map(s => ({
+      ...s,
+      fromGuest: s.fromGuestId ? guestMap.get(s.fromGuestId) ?? null : null,
+      toGuest:   s.toGuestId   ? guestMap.get(s.toGuestId)   ?? null : null,
+    })))
   } catch (e: any) { res.status(500).json({ message: e.message }) }
 })
 

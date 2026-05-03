@@ -80,8 +80,8 @@ export default function SettlementPage() {
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {myOwed.map((s: any) => {
-                  const toName  = s.toUser?.nickname ?? s.toGuestName ?? 'Guest'
-                  const toPhone = s.toUser?.phone
+                  const toName  = s.toUser?.nickname ?? s.toGuest?.name ?? s.toGuestName ?? 'Guest'
+                  const toPhone = s.toUser?.phone ?? s.toGuest?.phone
                   const isPaid  = s.status !== 'PENDING'
                   const paidAt  = s.reportPayAt ? new Date(s.reportPayAt) : null
 

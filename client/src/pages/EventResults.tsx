@@ -173,7 +173,7 @@ if (loading) return <Spinner />
             const key      = p.userId ?? p.guestId
             const name     = p.user?.nickname ?? p.guest?.name ?? 'Guest'
             const r        = results[key] ?? { buyIns: 1, finalChips: 500 }
-            const net      = (r.finalChips - r.buyIns * 500) / 10
+            const net      = Math.round(((r.finalChips - r.buyIns * 500) / 10) / 25) * 25
 
             return (
               <div key={p.id} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #1f2937' }}>

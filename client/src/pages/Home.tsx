@@ -12,11 +12,12 @@ import { shareEventOpen } from '../utils/whatsapp'
 import api from '../api/axios'
 
 export default function HomePage() {
-  const [events, setEvents]         = useState<any[]>([])
-  const [loading, setLoading]       = useState(true)
-  const [actioning, setActioning]   = useState<string | null>(null)
-  const [checklists, setChecklists] = useState<Record<string, any[]>>({})
-  const [newItems, setNewItems]     = useState<Record<string, string>>({})
+  const [events, setEvents]           = useState<any[]>([])
+  const [loading, setLoading]         = useState(true)
+  const [actioning, setActioning]     = useState<string | null>(null)
+  const [checklists, setChecklists]   = useState<Record<string, any[]>>({})
+  const [newItems, setNewItems]       = useState<Record<string, string>>({})
+  const [registerForm, setRegisterForm] = useState<{ eventId: string; guests: { name: string; phone: string }[] } | null>(null)
   const user       = useAuthStore(s => s.user)
   const activeGang = useAuthStore(s => s.activeGang)
   const navigate   = useNavigate()
@@ -41,10 +42,11 @@ export default function HomePage() {
 
   useEffect(() => { load() }, [])
 
-  const handleRegister = async (eventId: string) => {
+  const handleRegister = async (eventId: string, guests: { name: string; phone: string }[]) => {
     setActioning(eventId)
     try {
-      await registerForEvent(eventId)
+      await registerForEvent(eventId, guests.filter(g => g.name.trim()))
+      setRegisterForm(null)
       await load()
       showToast('Registered successfully!')
       if (activeGang?.whatsappLink) {
@@ -123,11 +125,19 @@ export default function HomePage() {
 
       {events.map(event => {
         const eventDate = new Date(event.date)
-        const isOpen    = event.status === 'OPEN'
-        const isHost    = event.hostId === user?.id
-        const myReg     = event.registrations?.find((r: any) => r.user?.id === user?.id)
-        const confirmed = event.registrations?.filter((r: any) => r.status === 'CONFIRMED') ?? []
-        const waitlist  = event.registrations?.filter((r: any) => r.status === 'WAITLIST')  ?? []
+        const isOpen      = event.status === 'OPEN'
+        const isHost      = event.hostId === user?.id
+        const myReg       = event.registrations?.find((r: any) => r.user?.id === user?.id)
+        const myGuestRegs = event.guestRegistrations?.filter((r: any) => r.registeredBy?.id === user?.id && r.status !== 'CANCELLED') ?? []
+        const confirmed   = [
+          ...(event.registrations?.filter((r: any) => r.status === 'CONFIRMED') ?? []).map((r: any) => ({ ...r, isGuest: false })),
+          ...(event.guestRegistrations?.filter((r: any) => r.status === 'CONFIRMED') ?? []).map((r: any) => ({ ...r, isGuest: true })),
+        ].sort((a, b) => a.position - b.position)
+        const waitlist    = [
+          ...(event.registrations?.filter((r: any) => r.status === 'WAITLIST') ?? []).map((r: any) => ({ ...r, isGuest: false })),
+          ...(event.guestRegistrations?.filter((r: any) => r.status === 'WAITLIST') ?? []).map((r: any) => ({ ...r, isGuest: true })),
+        ].sort((a, b) => a.position - b.position)
+        const isShowingForm = registerForm?.eventId === event.id
         const checklist = checklists[event.id] ?? []
         const newItem   = newItems[event.id] ?? ''
 
@@ -269,11 +279,18 @@ export default function HomePage() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {confirmed.map((r: any, i: number) => (
-                    <div key={r.user.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.875rem' }}>
+                    <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.875rem' }}>
                       <span style={{ color: '#6b7280', width: 20 }}>{i + 1}.</span>
-                      <span style={{ color: r.user.id === user?.id ? '#16a34a' : 'white', fontWeight: r.user.id === user?.id ? 600 : 400 }}>
-                        {r.user.nickname}
-                      </span>
+                      {r.isGuest ? (
+                        <>
+                          <span style={{ color: 'white' }}>{r.name}</span>
+                          <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>(+1 · {r.registeredBy?.nickname})</span>
+                        </>
+                      ) : (
+                        <span style={{ color: r.user.id === user?.id ? '#16a34a' : 'white', fontWeight: r.user.id === user?.id ? 600 : 400 }}>
+                          {r.user.nickname}
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -293,17 +310,63 @@ export default function HomePage() {
                 )}
 
                 {!myReg ? (
-                  <button
-                    onClick={() => handleRegister(event.id)}
-                    disabled={actioning === event.id}
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.5rem', background: '#16a34a', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                  >
-                    {actioning === event.id ? 'Registering...' : 'Register'}
-                  </button>
+                  isShowingForm ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>
+                        Registering: <span style={{ color: '#16a34a', fontWeight: 600 }}>{user?.nickname}</span>
+                      </p>
+                      {registerForm!.guests.map((g, i) => (
+                        <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <input
+                              placeholder={`Guest ${i + 1} name`}
+                              value={g.name}
+                              onChange={e => setRegisterForm(f => f ? { ...f, guests: f.guests.map((x, j) => j === i ? { ...x, name: e.target.value } : x) } : f)}
+                              style={{ flex: 1, background: '#1a1a2e', color: 'white', border: '1px solid #4b5563', borderRadius: '0.5rem', padding: '0.375rem 0.75rem' }}
+                            />
+                            <button
+                              onClick={() => setRegisterForm(f => f ? { ...f, guests: f.guests.filter((_, j) => j !== i) } : f)}
+                              style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}
+                            >✕</button>
+                          </div>
+                          <input
+                            placeholder="Phone (for Bit payment)"
+                            value={g.phone}
+                            onChange={e => setRegisterForm(f => f ? { ...f, guests: f.guests.map((x, j) => j === i ? { ...x, phone: e.target.value } : x) } : f)}
+                            style={{ background: '#1a1a2e', color: 'white', border: '1px solid #374151', borderRadius: '0.5rem', padding: '0.375rem 0.75rem', fontSize: '0.875rem' }}
+                          />
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => setRegisterForm(f => f ? { ...f, guests: [...f.guests, { name: '', phone: '' }] } : f)}
+                        style={{ background: 'none', color: '#9ca3af', border: '1px dashed #4b5563', borderRadius: '0.5rem', padding: '0.375rem', cursor: 'pointer', fontSize: '0.875rem' }}
+                      >+ Add Guest</button>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={() => handleRegister(event.id, registerForm!.guests)}
+                          disabled={actioning === event.id}
+                          style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', background: '#16a34a', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                        >
+                          {actioning === event.id ? 'Registering...' : 'Confirm'}
+                        </button>
+                        <button
+                          onClick={() => setRegisterForm(null)}
+                          style={{ padding: '0.5rem 1rem', borderRadius: '0.5rem', background: '#374151', color: 'white', border: 'none', cursor: 'pointer' }}
+                        >Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setRegisterForm({ eventId: event.id, guests: [] })}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.5rem', background: '#16a34a', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                    >
+                      Register
+                    </button>
+                  )
                 ) : myReg.status === 'CONFIRMED' ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <p style={{ textAlign: 'center', color: '#16a34a', fontSize: '0.875rem', fontWeight: 600 }}>
-                      ✅ You are in!
+                      ✅ You are in!{myGuestRegs.length > 0 && ` (+${myGuestRegs.length} guest${myGuestRegs.length > 1 ? 's' : ''})`}
                     </p>
                     <button
                       onClick={() => handleCancel(event.id)}
