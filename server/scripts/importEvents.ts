@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  * Import historical events from a JSON file.
  *
@@ -71,7 +72,8 @@ async function main() {
 
   console.log(`\nImporting ${events.length} event(s)...\n`)
 
-  for (const [idx, ev] of events.entries()) {
+  for (let idx = 0; idx < events.length; idx++) {
+    const ev = events[idx]
     const eventDate = new Date(ev.date)
     const label     = eventDate.toLocaleDateString('en-IL', { day: 'numeric', month: 'short', year: 'numeric' })
 

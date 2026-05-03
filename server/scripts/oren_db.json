@@ -1,0 +1,389 @@
+[
+  {
+    "date": "2025-10-30T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Ref",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 2, "finalChips": 0},
+      {"nickname": "Barazani",     "buyIns": 8, "finalChips": 3500},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 2, "finalChips": 1500},
+      {"nickname": "Kaftory",      "buyIns": 4, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 2, "finalChips": 1500},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 2250},
+      {"nickname": "Superstar",    "buyIns": 1, "finalChips": 2750},
+      {"nickname": "Brino",        "buyIns": 2, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2025-11-06T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 1000},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 2000},
+      {"nickname": "Barazani",     "buyIns": 1, "finalChips": 4500},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 3, "finalChips": 0},
+      {"nickname": "Kaftory",      "buyIns": 1, "finalChips": 0},
+      {"name":     "Guest Amir",   "buyIns": 4, "finalChips": 500},
+      {"nickname": "Roneni",       "buyIns": 2, "finalChips": 0},
+      {"nickname": "Spaceman",     "buyIns": 3, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2025-11-13T19:30:00",
+    "type": "ORDINARY",
+    "format": "ONLINE",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 2000},
+      {"nickname": "The Raise",    "buyIns": 3, "finalChips": 5000},
+      {"nickname": "Barazani",     "buyIns": 2, "finalChips": 0},
+      {"nickname": "Mojtaba",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 2, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 3, "finalChips": 0},
+      {"nickname": "Odedi",        "buyIns": 2, "finalChips": 1000},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2025-11-22T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Mojtaba",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 2250},
+      {"nickname": "The Raise",    "buyIns": 2, "finalChips": 1250},
+      {"nickname": "Barazani",     "buyIns": 2, "finalChips": 1000},
+      {"nickname": "Mojtaba",      "buyIns": 1, "finalChips": 1500},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 2, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 2, "finalChips": 500},
+      {"nickname": "Spaceman",     "buyIns": 3, "finalChips": 0},
+      {"name":     "Guest Omer",   "buyIns": 1, "finalChips": 500}
+    ]
+  },
+  {
+    "date": "2025-11-27T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "The Raise",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 3, "finalChips": 0},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 2000},
+      {"nickname": "Barazani",     "buyIns": 2, "finalChips": 4000},
+      {"nickname": "Kaftory",      "buyIns": 2, "finalChips": 500},
+      {"nickname": "Odedi",        "buyIns": 1, "finalChips": 0},
+      {"nickname": "Spaceman",     "buyIns": 1, "finalChips": 500},
+      {"nickname": "Superstar",    "buyIns": 4, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2025-12-11T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Spaceman",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 2, "finalChips": 1500},
+      {"nickname": "Barazani",     "buyIns": 1, "finalChips": 1500},
+      {"nickname": "Mojtaba",      "buyIns": 4, "finalChips": 1500},
+      {"nickname": "Ref",          "buyIns": 2, "finalChips": 1000},
+      {"nickname": "Kaftory",      "buyIns": 1, "finalChips": 500},
+      {"nickname": "The Cat",      "buyIns": 2, "finalChips": 0},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 1000}
+    ]
+  },
+  {
+    "date": "2025-12-18T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Mojtaba",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 2, "finalChips": 0},
+      {"nickname": "The Raise",    "buyIns": 2, "finalChips": 0},
+      {"nickname": "Barazani",     "buyIns": 2, "finalChips": 4000},
+      {"nickname": "Mojtaba",      "buyIns": 2, "finalChips": 1500},
+      {"nickname": "Ref",          "buyIns": 2, "finalChips": 1000},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 1, "finalChips": 250},
+      {"nickname": "Kaftory",      "buyIns": 4, "finalChips": 250},
+      {"nickname": "Spaceman",     "buyIns": 3, "finalChips": 2000},
+      {"nickname": "Brino",        "buyIns": 1, "finalChips": 500}
+    ]
+  },
+  {
+    "date": "2025-12-25T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Ref",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 2, "finalChips": 2000},
+      {"nickname": "The Raise",    "buyIns": 2, "finalChips": 0},
+      {"nickname": "Barazani",     "buyIns": 3, "finalChips": 0},
+      {"nickname": "Ref",          "buyIns": 3, "finalChips": 0},
+      {"nickname": "Kaftory",      "buyIns": 2, "finalChips": 1000},
+      {"nickname": "Spaceman",     "buyIns": 1, "finalChips": 3000},
+      {"nickname": "Superstar",    "buyIns": 1, "finalChips": 1000}
+    ]
+  },
+  {
+    "date": "2026-01-01T19:30:00",
+    "type": "ORDINARY",
+    "format": "ONLINE",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 2, "finalChips": 1000},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 1000},
+      {"nickname": "Barazani",     "buyIns": 4, "finalChips": 3000},
+      {"nickname": "Mojtaba",      "buyIns": 4, "finalChips": 0},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 1, "finalChips": 5000},
+      {"nickname": "Kaftory",      "buyIns": 2, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 3, "finalChips": 0},
+      {"nickname": "Spaceman",     "buyIns": 1, "finalChips": 0},
+      {"nickname": "Superstar",    "buyIns": 2, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2026-01-08T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 0},
+      {"nickname": "Barazani",     "buyIns": 2, "finalChips": 1000},
+      {"nickname": "Ref",          "buyIns": 1, "finalChips": 2000},
+      {"name":     "Guest Amir",   "buyIns": 1, "finalChips": 1000},
+      {"nickname": "Roneni",       "buyIns": 2, "finalChips": 0},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 1000},
+      {"nickname": "Brino",        "buyIns": 1, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2026-01-15T19:30:00",
+    "type": "ORDINARY",
+    "format": "ONLINE",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 1000},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 3250},
+      {"nickname": "Barazani",     "buyIns": 6, "finalChips": 0},
+      {"nickname": "Mojtaba",      "buyIns": 4, "finalChips": 0},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 1, "finalChips": 1750},
+      {"nickname": "Kaftory",      "buyIns": 1, "finalChips": 2000},
+      {"nickname": "The Cat",      "buyIns": 2, "finalChips": 1500},
+      {"nickname": "Spaceman",     "buyIns": 3, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2026-01-22T19:30:00",
+    "type": "ORDINARY",
+    "format": "ONLINE",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 2, "finalChips": 3000},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 0},
+      {"nickname": "Barazani",     "buyIns": 6, "finalChips": 1500},
+      {"nickname": "Mojtaba",      "buyIns": 4, "finalChips": 0},
+      {"nickname": "Ref",          "buyIns": 2, "finalChips": 0},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 1, "finalChips": 0},
+      {"nickname": "Kaftory",      "buyIns": 1, "finalChips": 2500},
+      {"nickname": "The Cat",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 0},
+      {"nickname": "Brino",        "buyIns": 1, "finalChips": 3500}
+    ]
+  },
+  {
+    "date": "2026-01-31T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Mojtaba",
+    "players": [
+      {"nickname": "CEO",        "buyIns": 1, "finalChips": 3000},
+      {"nickname": "The Raise",  "buyIns": 1, "finalChips": 500},
+      {"nickname": "Mojtaba",    "buyIns": 1, "finalChips": 0},
+      {"nickname": "Odedi",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "Spaceman",   "buyIns": 2, "finalChips": 500},
+      {"nickname": "Brino",      "buyIns": 1, "finalChips": 0},
+      {"name":     "Guest Omer", "buyIns": 1, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2026-02-05T19:30:00",
+    "type": "ORDINARY",
+    "format": "ONLINE",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 0},
+      {"nickname": "The Raise",    "buyIns": 4, "finalChips": 750},
+      {"nickname": "Barazani",     "buyIns": 4, "finalChips": 3750},
+      {"nickname": "Mojtaba",      "buyIns": 3, "finalChips": 0},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 1, "finalChips": 0},
+      {"nickname": "Kaftory",      "buyIns": 3, "finalChips": 2000},
+      {"nickname": "The Cat",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 0},
+      {"nickname": "Brino",        "buyIns": 2, "finalChips": 4000}
+    ]
+  },
+  {
+    "date": "2026-02-06T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "The Cat",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 750},
+      {"nickname": "The Raise",    "buyIns": 2, "finalChips": 500},
+      {"nickname": "Barazani",     "buyIns": 2, "finalChips": 1000},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 2, "finalChips": 750},
+      {"nickname": "Kaftory",      "buyIns": 4, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "Roneni",       "buyIns": 2, "finalChips": 0},
+      {"nickname": "Odedi",        "buyIns": 1, "finalChips": 1500},
+      {"nickname": "Spaceman",     "buyIns": 1, "finalChips": 3500}
+    ]
+  },
+  {
+    "date": "2026-02-19T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Mojtaba",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 3750},
+      {"nickname": "Barazani",     "buyIns": 8, "finalChips": 0},
+      {"nickname": "Mojtaba",      "buyIns": 2, "finalChips": 3000},
+      {"nickname": "Ref",          "buyIns": 2, "finalChips": 0},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 1, "finalChips": 1250},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2026-02-19T19:30:00",
+    "type": "ORDINARY",
+    "format": "ONLINE",
+    "players": [
+      {"nickname": "The Raise",    "buyIns": 2, "finalChips": 0},
+      {"nickname": "Barazani",     "buyIns": 1, "finalChips": 3000},
+      {"nickname": "Mojtaba",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "Ref",          "buyIns": 1, "finalChips": 2000},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 3, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 1, "finalChips": 1000},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 0},
+      {"nickname": "Brino",        "buyIns": 1, "finalChips": 1500},
+      {"name":     "Guest Yaniv",  "buyIns": 4, "finalChips": 500}
+    ]
+  },
+  {
+    "date": "2026-02-26T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "The Raise",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 2250},
+      {"nickname": "The Raise",    "buyIns": 3, "finalChips": 500},
+      {"nickname": "Barazani",     "buyIns": 1, "finalChips": 0},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 1, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 2, "finalChips": 0},
+      {"nickname": "Roneni",       "buyIns": 1, "finalChips": 2000},
+      {"nickname": "Brino",        "buyIns": 4, "finalChips": 2500},
+      {"name":     "Guest Liran",  "buyIns": 3, "finalChips": 750}
+    ]
+  },
+  {
+    "date": "2026-03-03T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Mojtaba",
+    "players": [
+      {"nickname": "CEO",        "buyIns": 3, "finalChips": 500},
+      {"nickname": "The Raise",  "buyIns": 1, "finalChips": 1250},
+      {"nickname": "Mojtaba",    "buyIns": 4, "finalChips": 2000},
+      {"name":     "Guest Amir", "buyIns": 2, "finalChips": 250},
+      {"nickname": "Roneni",     "buyIns": 1, "finalChips": 0},
+      {"nickname": "Brino",      "buyIns": 1, "finalChips": 2000}
+    ]
+  },
+  {
+    "date": "2026-03-06T19:30:00",
+    "type": "ORDINARY",
+    "format": "ONLINE",
+    "players": [
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 2000},
+      {"nickname": "Barazani",     "buyIns": 3, "finalChips": 4000},
+      {"nickname": "Mojtaba",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 2, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 2, "finalChips": 0},
+      {"nickname": "Spaceman",     "buyIns": 1, "finalChips": 500},
+      {"nickname": "Brino",        "buyIns": 3, "finalChips": 0}
+    ]
+  },
+  {
+    "date": "2026-03-12T19:30:00",
+    "type": "ORDINARY",
+    "format": "ONLINE",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 1500},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 500},
+      {"nickname": "Barazani",     "buyIns": 6, "finalChips": 0},
+      {"nickname": "Ref",          "buyIns": 2, "finalChips": 2000},
+      {"nickname": "Kaftory",      "buyIns": 5, "finalChips": 2750},
+      {"nickname": "The Cat",      "buyIns": 2, "finalChips": 2000},
+      {"nickname": "Odedi",        "buyIns": 1, "finalChips": 1000},
+      {"nickname": "Spaceman",     "buyIns": 2, "finalChips": 500},
+      {"nickname": "Superstar",    "buyIns": 1, "finalChips": 0},
+      {"nickname": "Brino",        "buyIns": 1, "finalChips": 750}
+    ]
+  },
+  {
+    "date": "2026-03-14T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Mojtaba",
+    "players": [
+      {"nickname": "Barazani",     "buyIns": 3, "finalChips": 0},
+      {"nickname": "Mojtaba",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "Ref",          "buyIns": 1, "finalChips": 1750},
+      {"name":     "Guest Amir",   "buyIns": 2, "finalChips": 0},
+      {"nickname": "Roneni",       "buyIns": 1, "finalChips": 2750},
+      {"nickname": "Brino",        "buyIns": 2, "finalChips": 500},
+      {"name":     "Guest Zvika",  "buyIns": 2, "finalChips": 1000}
+    ]
+  },
+  {
+    "date": "2026-03-22T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "The Raise",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 1000},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 0},
+      {"nickname": "Barazani",     "buyIns": 1, "finalChips": 1000},
+      {"nickname": "Mojtaba",      "buyIns": 2, "finalChips": 1000},
+      {"nickname": "Kaftory",      "buyIns": 3, "finalChips": 0},
+      {"nickname": "The Cat",      "buyIns": 1, "finalChips": 0},
+      {"nickname": "Roneni",       "buyIns": 1, "finalChips": 1500},
+      {"nickname": "Spaceman",     "buyIns": 1, "finalChips": 0},
+      {"nickname": "Brino",        "buyIns": 1, "finalChips": 1500}
+    ]
+  },
+  {
+    "date": "2026-03-26T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Ref",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 2000},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 1750},
+      {"nickname": "Barazani",     "buyIns": 2, "finalChips": 0},
+      {"nickname": "Mojtaba",      "buyIns": 3, "finalChips": 0},
+      {"nickname": "Ref",          "buyIns": 4, "finalChips": 500},
+      {"nickname": "OMAHA LAKRAN", "buyIns": 2, "finalChips": 1750},
+      {"nickname": "The Cat",      "buyIns": 2, "finalChips": 1500}
+    ]
+  },
+  {
+    "date": "2026-04-02T19:30:00",
+    "type": "ORDINARY",
+    "format": "IN_PERSON",
+    "hostNickname": "Barazani",
+    "players": [
+      {"nickname": "CEO",          "buyIns": 1, "finalChips": 1500},
+      {"nickname": "The Raise",    "buyIns": 1, "finalChips": 0},
+      {"nickname": "Barazani",     "buyIns": 3, "finalChips": 1000},
+      {"nickname": "Ref",          "buyIns": 2, "finalChips": 1500},
+      {"nickname": "Kaftory",      "buyIns": 2, "finalChips": 1000},
+      {"nickname": "Spaceman",     "buyIns": 1, "finalChips": 1500},
+      {"nickname": "Brino",        "buyIns": 3, "finalChips": 0}
+    ]
+  }
+]

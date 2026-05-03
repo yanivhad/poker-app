@@ -28,13 +28,15 @@ export default function EventResultsPage() {
       setEvent(evtRes.data)
       setPlayers(playersRes.data)
       setAllUsers(usersRes.data)
-      // Init results
-      const init: Record<string, { buyIns: number; finalChips: number }> = {}
-      playersRes.data.forEach((p: any) => {
-        const key = p.userId ?? p.guestId
-        init[key] = { buyIns: 1, finalChips: 500 }
+      // Init results — preserve existing entries for players already in state
+      setResults(prev => {
+        const init: Record<string, { buyIns: number; finalChips: number }> = {}
+        playersRes.data.forEach((p: any) => {
+          const key = p.userId ?? p.guestId
+          init[key] = prev[key] ?? { buyIns: 1, finalChips: 500 }
+        })
+        return init
       })
-      setResults(init)
     } finally { setLoading(false) }
   }
 
