@@ -9,10 +9,13 @@ export function shareEventOpen(event: any) {
   const confirmed = (event.registrations ?? []).filter((r: any) => r.status === 'CONFIRMED')
   const playerNames: string[] = confirmed.map((r: any) => r.user?.nickname ?? 'Guest')
 
+  const hostName = event.host?.nickname ?? null
+
   const lines = [
     '♠️ *Poker Night*',
     `📅 ${dateStr} | ${timeStr}`,
     `📍 ${event.format === 'ONLINE' ? 'Online' : 'In Person'}`,
+    `🏠 Host: ${hostName ? `*${hostName}*` : 'waiting for volunteer'}`,
     `👥 ${confirmed.length}/${event.maxSeats} registered`,
   ]
 

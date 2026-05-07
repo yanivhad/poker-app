@@ -4,6 +4,7 @@ import api from '../api/axios'
 import Spinner from '../components/ui/Spinner'
 import Toast from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
+import { useAuthStore } from '../store/auth.store'
 
 
 
@@ -31,13 +32,15 @@ export default function PlayersPage() {
   const [pwSaving, setPwSaving]         = useState(false)
   const { toast, hideToast } = useToast()
   const navigate = useNavigate()
-const load = async () => {
+  const activeGang = useAuthStore(s => s.activeGang)
+
+  const load = async () => {
     const { data } = await api.get('/users?includeInactive=true')
     setPlayers(data)
     setLoading(false)
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [activeGang?.id])
 
   const toggleActive = async (id: string, isActive: boolean) => {
     await api.patch(`/users/${id}/status`, { isActive: !isActive })
@@ -62,10 +65,7 @@ const load = async () => {
 if (loading) return <Spinner />
   return (
     <div style={{ maxWidth: 520, margin: '0 auto' }}>
-      <h1 style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '1rem' }}>
-        👥 Players
-      </h1>
-<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
   <h1 style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '1.25rem' }}>👥 Players</h1>
   <button
     onClick={() => navigate('/admin/players/new')}
