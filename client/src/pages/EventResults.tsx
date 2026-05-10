@@ -14,6 +14,7 @@ export default function EventResultsPage() {
   const [results, setResults]   = useState<Record<string, { buyIns: number; finalChips: number }>>({})
   const [loading, setLoading]   = useState(true)
   const [saving, setSaving]     = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [guestName, setGuestName] = useState('')
   const [allUsers, setAllUsers] = useState<any[]>([])
   const { toast, showToast, hideToast } = useToast()
@@ -68,24 +69,35 @@ export default function EventResultsPage() {
  }
   }
 
-  const handleSubmit = async () => {
+  const buildPayload = () => players.map((p: any) => {
+    const key = p.userId ?? p.guestId
+    return {
+      userId:     p.userId  ?? null,
+      guestId:    p.guestId ?? null,
+      buyIns:     results[key]?.buyIns     ?? 1,
+      finalChips: results[key]?.finalChips ?? 500,
+    }
+  })
+
+  const handleSave = async () => {
     setSaving(true)
     try {
-      const payload = players.map((p: any) => {
-        const key = p.userId ?? p.guestId
-        return {
-          userId:     p.userId   ?? null,
-          guestId:    p.guestId  ?? null,
-          buyIns:     results[key]?.buyIns     ?? 1,
-          finalChips: results[key]?.finalChips ?? 500,
-        }
-      })
-      await api.post(`/events/${id}/results`, { results: payload })
+      await api.post(`/events/${id}/results`, { results: buildPayload() })
+      showToast('Results saved!', 'success')
+    } catch (e: any) {
+      showToast(e.response?.data?.message || 'Error saving', 'error')
+    } finally { setSaving(false) }
+  }
+
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    try {
+      await api.post(`/events/${id}/results`, { results: buildPayload() })
       await api.post(`/events/${id}/settlements`)
       navigate(`/events/${id}/settlement`)
     } catch (e: any) {
-            showToast(e.response?.data?.message, 'error')
-    } finally { setSaving(false) }
+      showToast(e.response?.data?.message || 'Error', 'error')
+    } finally { setSubmitting(false) }
   }
 
   const totalPot = players.reduce((sum, p) => {
@@ -219,19 +231,33 @@ if (loading) return <Spinner />
       )}
 
       {players.length > 0 && (
-        <button
-          onClick={handleSubmit}
-          disabled={saving || !chipsBalanced}
-          style={{
-            width: '100%', padding: '0.75rem', borderRadius: '0.5rem',
-            background: chipsBalanced ? '#16a34a' : '#374151',
-            color: 'white', fontWeight: 600, fontSize: '1rem',
-            border: 'none', cursor: chipsBalanced ? 'pointer' : 'not-allowed',
-            opacity: saving ? 0.7 : 1,
-          }}
-        >
-          {saving ? 'Saving...' : !chipsBalanced ? 'Chips must balance before saving' : 'Save & Calculate Settlement'}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <button
+            onClick={handleSave}
+            disabled={saving || submitting}
+            style={{
+              width: '100%', padding: '0.75rem', borderRadius: '0.5rem',
+              background: '#374151', color: 'white', fontWeight: 600, fontSize: '1rem',
+              border: '1px solid #4b5563', cursor: 'pointer',
+              opacity: saving ? 0.7 : 1,
+            }}
+          >
+            {saving ? 'Saving...' : '💾 Save Progress'}
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || saving || !chipsBalanced}
+            style={{
+              width: '100%', padding: '0.75rem', borderRadius: '0.5rem',
+              background: chipsBalanced ? '#16a34a' : '#374151',
+              color: 'white', fontWeight: 600, fontSize: '1rem',
+              border: 'none', cursor: chipsBalanced ? 'pointer' : 'not-allowed',
+              opacity: submitting ? 0.7 : 1,
+            }}
+          >
+            {submitting ? 'Calculating...' : !chipsBalanced ? '⚠️ Chips must balance to submit' : '✅ Submit & Calculate Settlement'}
+          </button>
+        </div>
       )}
       {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
