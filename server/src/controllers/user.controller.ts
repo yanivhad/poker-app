@@ -27,7 +27,15 @@ export const update  = async (req: AuthRequest, res: Response) => {
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 }
 export const setActive = async (req: AuthRequest, res: Response) => { try { res.json(await UserService.setUserActive(req.params.id, req.body.isActive)) } catch (e: any) { res.status(400).json({ message: e.message }) } }
-export const create      = async (req: AuthRequest, res: Response) => { try { res.status(201).json(await UserService.createUser(req.body)) } catch (e: any) { res.status(400).json({ message: e.message }) } }
+export const create      = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await UserService.createUser(req.body)
+    if (req.gangId) {
+      await prisma.gangMember.create({ data: { gangId: req.gangId, userId: user.id, role: 'MEMBER', status: 'APPROVED' } })
+    }
+    res.status(201).json(user)
+  } catch (e: any) { res.status(400).json({ message: e.message }) }
+}
 export const setPassword = async (req: AuthRequest, res: Response) => {
   try {
     const { password } = req.body
