@@ -105,6 +105,20 @@ r.get('/:id/members', authenticate, async (req: AuthRequest, res: Response) => {
   } catch (e: any) { res.status(500).json({ message: e.message }) }
 })
 
+// Nominate an existing user into a gang — MASTER only
+r.post('/:id/members', authenticate, requireMaster, async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId } = req.body
+    if (!userId) return res.status(400).json({ message: 'userId is required' })
+    const member = await prisma.gangMember.upsert({
+      where:  { gangId_userId: { gangId: req.params.id, userId } },
+      update: { status: 'APPROVED' },
+      create: { gangId: req.params.id, userId, role: 'MEMBER', status: 'APPROVED' },
+    })
+    res.status(201).json(member)
+  } catch (e: any) { res.status(400).json({ message: e.message }) }
+})
+
 // Request to join gang — any authenticated user
 r.post('/:id/join', authenticate, async (req: AuthRequest, res: Response) => {
   try { res.status(201).json(await GangService.requestJoin(req.params.id, req.user!.userId)) }

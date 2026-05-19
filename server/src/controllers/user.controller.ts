@@ -36,6 +36,16 @@ export const create      = async (req: AuthRequest, res: Response) => {
     res.status(201).json(user)
   } catch (e: any) { res.status(400).json({ message: e.message }) }
 }
+export const setDefaultGang = async (req: AuthRequest, res: Response) => {
+  try {
+    const { gangId } = req.body
+    if (gangId) {
+      const membership = await prisma.gangMember.findUnique({ where: { gangId_userId: { gangId, userId: req.params.id } } })
+      if (!membership || membership.status !== 'APPROVED') return res.status(400).json({ message: 'User is not an approved member of that gang' })
+    }
+    res.json(await UserService.setDefaultGang(req.params.id, gangId ?? null))
+  } catch (e: any) { res.status(400).json({ message: e.message }) }
+}
 export const setPassword = async (req: AuthRequest, res: Response) => {
   try {
     const { password } = req.body

@@ -94,8 +94,11 @@ model User {
   isActive      Boolean     @default(true)
   favoriteGames GameType[]
   preferredDays DayOfWeek[]
+  defaultGangId String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+
+  defaultGang         Gang?           @relation("UserDefaultGang", fields: [defaultGangId], references: [id])
 
   hostedEvents        Event[]         @relation("HostedEvents")
   submittedResults    Event[]         @relation("ResultsSubmitter")
@@ -118,9 +121,10 @@ model Gang {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members GangMember[]
-  events  Event[]
-  cases   PokerCase[]
+  members      GangMember[]
+  events       Event[]
+  cases        PokerCase[]
+  defaultUsers User[]       @relation("UserDefaultGang")
 }
 
 model GangMember {
