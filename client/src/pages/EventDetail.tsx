@@ -3,10 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import { shareResults } from '../utils/whatsapp'
 import Spinner from '../components/ui/Spinner'
+import { useAuthStore } from '../store/auth.store'
 
 export default function EventDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const user       = useAuthStore(s => s.user)
+  const activeGang = useAuthStore(s => s.activeGang)
+  const isAdmin    = user?.role === 'MASTER' || user?.role === 'ADMIN' || activeGang?.role === 'ADMIN'
   const [event, setEvent]             = useState<any>(null)
   const [results, setResults]         = useState<any[]>([])
   const [settlements, setSettlements] = useState<any[]>([])
@@ -71,18 +75,32 @@ export default function EventDetailPage() {
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #1f2937', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2 style={{ fontWeight: 600, color: 'white' }}>Results</h2>
-            <a
-              href={shareResults(event, results)}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                background: '#25D366', color: 'white',
-                padding: '0.25rem 0.75rem', borderRadius: '0.5rem',
-                fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none',
-              }}
-            >
-              📤 Share
-            </a>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {isAdmin && (
+                <button
+                  onClick={() => navigate(`/events/${id}/results`)}
+                  style={{
+                    background: '#374151', color: 'white',
+                    padding: '0.25rem 0.75rem', borderRadius: '0.5rem',
+                    fontSize: '0.75rem', fontWeight: 600, border: '1px solid #4b5563', cursor: 'pointer',
+                  }}
+                >
+                  ✏️ Edit
+                </button>
+              )}
+              <a
+                href={shareResults(event, results)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: '#25D366', color: 'white',
+                  padding: '0.25rem 0.75rem', borderRadius: '0.5rem',
+                  fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none',
+                }}
+              >
+                📤 Share
+              </a>
+            </div>
           </div>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>

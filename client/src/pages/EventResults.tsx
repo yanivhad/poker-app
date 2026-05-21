@@ -4,10 +4,14 @@ import api from '../api/axios'
 import Spinner from '../components/ui/Spinner'
 import Toast from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
+import { useAuthStore } from '../store/auth.store'
 
 export default function EventResultsPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const user       = useAuthStore(s => s.user)
+  const activeGang = useAuthStore(s => s.activeGang)
+  const isAdmin    = user?.role === 'MASTER' || user?.role === 'ADMIN' || activeGang?.role === 'ADMIN'
 
   const [event, setEvent] = useState<any>(null) // eslint-disable-line
   const [players, setPlayers]   = useState<any[]>([])
@@ -21,20 +25,26 @@ export default function EventResultsPage() {
 
   const load = async () => {
     try {
-      const [evtRes, playersRes, usersRes] = await Promise.all([
+      const [evtRes, playersRes, usersRes, savedResultsRes] = await Promise.all([
         api.get(`/events/${id}`),
         api.get(`/events/${id}/players`),
         api.get('/users'),
+        api.get(`/events/${id}/results`),
       ])
       setEvent(evtRes.data)
       setPlayers(playersRes.data)
       setAllUsers(usersRes.data)
-      // Init results — preserve existing entries for players already in state
-      setResults(prev => {
+      // Build a map from saved results so editing pre-fills existing values
+      const savedMap: Record<string, { buyIns: number; finalChips: number }> = {}
+      savedResultsRes.data.forEach((r: any) => {
+        const key = r.userId ?? r.guestId
+        savedMap[key] = { buyIns: r.buyIn?.count ?? 1, finalChips: r.finalChips }
+      })
+      setResults(() => {
         const init: Record<string, { buyIns: number; finalChips: number }> = {}
         playersRes.data.forEach((p: any) => {
           const key = p.userId ?? p.guestId
-          init[key] = prev[key] ?? { buyIns: 1, finalChips: 500 }
+          init[key] = savedMap[key] ?? { buyIns: 1, finalChips: 500 }
         })
         return init
       })
@@ -121,10 +131,13 @@ export default function EventResultsPage() {
   const availableUsers = allUsers.filter((u: any) => !confirmedIds.has(u.id))
 
 if (loading) return <Spinner />
+  if (event?.status === 'DONE' && !isAdmin) return (
+    <div style={{ color: '#9ca3af', textAlign: 'center', marginTop: 40 }}>Only admins can edit results for completed events.</div>
+  )
   return (
     <div style={{ maxWidth: 520, margin: '0 auto' }}>
       <h1 style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '1rem' }}>
-        📝 Enter Results
+        {event?.status === 'DONE' ? '✏️ Edit Results' : '📝 Enter Results'}
       </h1>
 
       {event?.resultsSubmittedBy && (
