@@ -36,6 +36,7 @@ export default function EditEventPage() {
         maxSeats:            event.maxSeats,
         onlineLink:          event.onlineLink   ?? '',
         onlinePassword:      event.onlinePassword ?? '',
+        season:              event.season ?? '',
       })
     }).finally(() => setLoading(false))
   }, [id])
@@ -53,6 +54,7 @@ export default function EditEventPage() {
         date:                new Date(form.date).toISOString(),
         registrationOpensAt: new Date(form.registrationOpensAt).toISOString(),
         maxSeats:            form.type === 'SPECIAL' ? 999 : Number(form.maxSeats),
+        season:              form.season.trim() || null,
       }
       if (form.lastRoundTime) payload.lastRoundTime = new Date(form.lastRoundTime).toISOString()
       if (form.format === 'ONLINE') {
@@ -120,6 +122,13 @@ export default function EditEventPage() {
               >{f.label}</button>
             ))}
           </div>
+        </div>
+
+        {/* Season */}
+        <div>
+          <label style={{ color: '#9ca3af', fontSize: '0.875rem', display: 'block', marginBottom: 4 }}>Season</label>
+          <input type="text" value={form.season} placeholder="e.g. 2026-2027" style={inputStyle}
+            onChange={e => set('season', e.target.value)} />
         </div>
 
         {/* Date */}

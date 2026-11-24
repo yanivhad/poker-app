@@ -12,7 +12,7 @@ export function shareEventOpen(event: any) {
   const hostName = event.host?.nickname ?? null
 
   const lines = [
-    '♠️ *Poker Night*',
+    event.season ? `♠️ *Poker Night* · Season ${event.season}` : '♠️ *Poker Night*',
     `📅 ${dateStr} | ${timeStr}`,
     `📍 ${event.format === 'ONLINE' ? 'Online' : 'In Person'}`,
     `🏠 Host: ${hostName ? `*${hostName}*` : 'waiting for volunteer'}`,
@@ -37,7 +37,7 @@ export function shareResults(event: any, results: any[]) {
   const sorted = [...results].sort((a, b) => b.netNIS - a.netNIS)
 
   const lines = [
-    `♠️ *Poker Night — ${dateStr}*`,
+    `♠️ *Poker Night — ${dateStr}*${event.season ? ` · Season ${event.season}` : ''}`,
     `👥 ${sorted.length} players`,
     '',
     ...sorted.map((r: any, i: number) => {
