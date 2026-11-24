@@ -56,7 +56,13 @@ export const getActiveEvents = (gangId?: string) =>
       throw new Error('Another event is already scheduled within 3 hours of this time')
 
     const status = new Date(data.registrationOpensAt) <= new Date() ? 'OPEN' : 'DRAFT'
-    const event  = await prisma.event.create({ data: { ...data, status } })
+    // New events belong to the gang's current season unless one is given explicitly
+    let season = data.season
+    if (!season) {
+      const gang = await prisma.gang.findUnique({ where: { id: data.gangId }, select: { currentSeason: true } })
+      season = gang?.currentSeason ?? null
+    }
+    const event  = await prisma.event.create({ data: { ...data, season, status } })
   
     if (data.format === 'IN_PERSON') {
       await prisma.checklistItem.createMany({

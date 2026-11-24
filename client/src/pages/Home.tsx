@@ -6,6 +6,7 @@ import {
   getChecklist, addChecklistItem, toggleChecklistItem, deleteChecklistItem
 } from '../api/events.api'
 import Spinner from '../components/ui/Spinner'
+import SeasonBadge from '../components/ui/SeasonBadge'
 import Toast from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
 import { shareEventOpen } from '../utils/whatsapp'
@@ -158,6 +159,7 @@ export default function HomePage() {
                     {' at '}
                     {eventDate.toLocaleTimeString('en-IL', { hour: '2-digit', minute: '2-digit' })}
                   </p>
+                  {event.season && <div style={{ marginTop: 4 }}><SeasonBadge season={event.season} /></div>}
                 </div>
                 <span style={{
                   fontSize: '0.75rem', padding: '2px 10px', borderRadius: 99, fontWeight: 500,

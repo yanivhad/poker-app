@@ -98,28 +98,29 @@ model User {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
-  defaultGang         Gang?           @relation("UserDefaultGang", fields: [defaultGangId], references: [id])
+  defaultGang Gang? @relation("UserDefaultGang", fields: [defaultGangId], references: [id])
 
-  hostedEvents        Event[]         @relation("HostedEvents")
-  submittedResults    Event[]         @relation("ResultsSubmitter")
+  hostedEvents        Event[]             @relation("HostedEvents")
+  submittedResults    Event[]             @relation("ResultsSubmitter")
   registrations       Registration[]
   guestRegistrations  GuestRegistration[]
   eventPlayers        EventPlayer[]
   buyIns              BuyIn[]
   results             Result[]
-  settlementsOwed     Settlement[]    @relation("SettlementFrom")
-  settlementsReceived Settlement[]    @relation("SettlementTo")
+  settlementsOwed     Settlement[]        @relation("SettlementFrom")
+  settlementsReceived Settlement[]        @relation("SettlementTo")
   heldCases           PokerCase[]
   checklistItems      ChecklistItem[]
   gangMemberships     GangMember[]
 }
 
 model Gang {
-  id        String   @id @default(cuid())
+  id            String   @id @default(cuid())
   name          String   @unique
   whatsappLink  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  currentSeason String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   members      GangMember[]
   events       Event[]
@@ -143,26 +144,27 @@ model GangMember {
 }
 
 model Event {
-  id                  String      @id @default(cuid())
-  type                EventType
-  format              EventFormat
-  status              EventStatus @default(DRAFT)
-  date                DateTime
-  lastRoundTime       DateTime?
-  registrationOpensAt DateTime
-  maxSeats            Int         @default(9)
-  onlineLink          String?
-  onlinePassword      String?
-  hostId                String?
-  gangId                String
-  resultsSubmittedById  String?
-  resultsSubmittedAt    DateTime?
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
+  id                   String      @id @default(cuid())
+  type                 EventType
+  format               EventFormat
+  status               EventStatus @default(DRAFT)
+  date                 DateTime
+  lastRoundTime        DateTime?
+  registrationOpensAt  DateTime
+  maxSeats             Int         @default(9)
+  season               String?
+  onlineLink           String?
+  onlinePassword       String?
+  hostId               String?
+  gangId               String
+  resultsSubmittedById String?
+  resultsSubmittedAt   DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
 
-  host               User?           @relation("HostedEvents", fields: [hostId], references: [id])
-  gang               Gang            @relation(fields: [gangId], references: [id])
-  resultsSubmittedBy User?           @relation("ResultsSubmitter", fields: [resultsSubmittedById], references: [id])
+  host               User?               @relation("HostedEvents", fields: [hostId], references: [id])
+  gang               Gang                @relation(fields: [gangId], references: [id])
+  resultsSubmittedBy User?               @relation("ResultsSubmitter", fields: [resultsSubmittedById], references: [id])
   registrations      Registration[]
   guestRegistrations GuestRegistration[]
   eventPlayers       EventPlayer[]
@@ -182,7 +184,7 @@ model Registration {
   registeredAt DateTime           @default(now())
 
   event Event @relation(fields: [eventId], references: [id])
-  user  User  @relation(fields: [userId],  references: [id])
+  user  User  @relation(fields: [userId], references: [id])
 
   @@unique([eventId, userId])
 }
@@ -207,12 +209,12 @@ model EventPlayer {
   id        String       @id @default(cuid())
   eventId   String
   userId    String?
-  guestId   String?  @unique
+  guestId   String?      @unique
   source    PlayerSource
   createdAt DateTime     @default(now())
 
   event Event  @relation(fields: [eventId], references: [id])
-  user  User?  @relation(fields: [userId],  references: [id])
+  user  User?  @relation(fields: [userId], references: [id])
   guest Guest? @relation(fields: [guestId], references: [id])
 
   @@unique([eventId, userId])
@@ -241,7 +243,7 @@ model BuyIn {
   createdAt DateTime @default(now())
 
   event Event  @relation(fields: [eventId], references: [id])
-  user  User?  @relation(fields: [userId],  references: [id])
+  user  User?  @relation(fields: [userId], references: [id])
   guest Guest? @relation(fields: [guestId], references: [id])
 
   @@unique([eventId, userId])
@@ -257,7 +259,7 @@ model Result {
   createdAt  DateTime @default(now())
 
   event Event  @relation(fields: [eventId], references: [id])
-  user  User?  @relation(fields: [userId],  references: [id])
+  user  User?  @relation(fields: [userId], references: [id])
   guest Guest? @relation(fields: [guestId], references: [id])
 
   @@unique([eventId, userId])
@@ -278,9 +280,9 @@ model Settlement {
   reportPayAt   DateTime?
   createdAt     DateTime         @default(now())
 
-  event    Event  @relation(fields: [eventId],   references: [id])
-  fromUser User?  @relation("SettlementFrom", fields: [fromUserId], references: [id])
-  toUser   User?  @relation("SettlementTo",   fields: [toUserId],   references: [id])
+  event    Event @relation(fields: [eventId], references: [id])
+  fromUser User? @relation("SettlementFrom", fields: [fromUserId], references: [id])
+  toUser   User? @relation("SettlementTo", fields: [toUserId], references: [id])
 }
 
 model PokerCase {
@@ -303,6 +305,6 @@ model ChecklistItem {
   addedById String
   createdAt DateTime @default(now())
 
-  event   Event @relation(fields: [eventId],   references: [id])
+  event   Event @relation(fields: [eventId], references: [id])
   addedBy User  @relation(fields: [addedById], references: [id])
 }

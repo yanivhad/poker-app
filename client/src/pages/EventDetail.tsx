@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import { shareResults } from '../utils/whatsapp'
 import Spinner from '../components/ui/Spinner'
+import SeasonBadge from '../components/ui/SeasonBadge'
 import { useAuthStore } from '../store/auth.store'
 
 export default function EventDetailPage() {
@@ -60,6 +61,7 @@ export default function EventDetailPage() {
           {' at '}
           {date.toLocaleTimeString('en-IL', { hour: '2-digit', minute: '2-digit' })}
         </p>
+        {event.season && <div><SeasonBadge season={event.season} /></div>}
         {event.host && (
           <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>
             🏠 Host: <span style={{ color: 'white', fontWeight: 500 }}>{event.host.nickname}</span>
