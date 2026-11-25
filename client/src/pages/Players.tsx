@@ -32,9 +32,9 @@ export default function PlayersPage() {
   const [selectedGangId, setSelectedGangId] = useState('')
   const { toast, hideToast } = useToast()
   const navigate = useNavigate()
-  const { activeGang, user } = useAuthStore(s => ({ activeGang: s.activeGang, user: s.user }))
+  const activeGang = useAuthStore(s => s.activeGang)
+  const user = useAuthStore(s => s.user)
   const isMaster = user?.role === 'MASTER'
-
   const load = async () => {
     const [usersRes, gangsRes] = await Promise.all([
       api.get('/users?includeInactive=true'),
